@@ -74,9 +74,6 @@ class FLSpp(KMeans):
         c_ll_iterations = ctypes.c_uint(self.lloyd_iterations)
         c_ls_iterations = ctypes.c_uint(self.local_search_iterations)
         c_labels = (ctypes.c_int * n_samples)()
-        # c_centers = (ctypes.POINTER(ctypes.c_double) * self.n_clusters)()
-        # for i in range(self.n_clusters):
-        #     c_centers[i] = (ctypes.c_double * self.n_features_in_)()  # type: ignore
         c_centers = (ctypes.c_double * self.n_features_in_ * self.n_clusters)()
 
         c_iter = ctypes.c_int()
@@ -100,15 +97,6 @@ class FLSpp(KMeans):
         self.cluster_centers_ = np.ctypeslib.as_array(
             c_centers, shape=(self.n_clusters, self.n_features_in_)
         )
-
-        # # This almost works but there is a piece of memory between the dimensions
-        # self.cluster_centers_ = np.ctypeslib.as_array(
-        #     (ctypes.POINTER(ctypes.c_double)).from_address(ctypes.addressof(c_centers)),
-        #     shape=(self.n_clusters, 2),
-        # )
-        # # This always works but copies the data
-        # self.cluster_centers_ = [[c[i] for i in range(self.n_features_in_)]
-        # for c in c_centers]
 
         self.labels_ = np.ctypeslib.as_array(c_labels)
 
