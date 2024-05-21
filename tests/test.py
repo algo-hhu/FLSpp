@@ -59,7 +59,7 @@ class TestFLSPP(unittest.TestCase):
 
     def test_fit(self) -> None:
 
-        flspp = FLSpp(n_clusters=2)
+        flspp = FLSpp(n_clusters=2, random_state=42)
         flspp.fit(self.example_data)
 
         labels = flspp.predict(self.example_data)
@@ -69,7 +69,7 @@ class TestFLSPP(unittest.TestCase):
         assert all(labels == [1, 1, 1, 0, 0, 0])
 
     def test_fit_predict(self) -> None:
-        flspp = FLSpp(n_clusters=2)
+        flspp = FLSpp(n_clusters=2, random_state=42)
         labels = flspp.fit_predict(self.example_data)
         assert all(labels == [1, 1, 1, 0, 0, 0])
 

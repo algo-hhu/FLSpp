@@ -73,6 +73,7 @@ class FLSpp(KMeans):
         c_k = ctypes.c_uint(self.n_clusters)
         c_ll_iterations = ctypes.c_uint(self.lloyd_iterations)
         c_ls_iterations = ctypes.c_uint(self.local_search_iterations)
+        c_random_state = ctypes.c_size_t(self.random_state)
         c_labels = (ctypes.c_int * n_samples)()
         c_centers = (ctypes.c_double * self.n_features_in_ * self.n_clusters)()
 
@@ -87,6 +88,7 @@ class FLSpp(KMeans):
             c_k,
             c_ll_iterations,
             c_ls_iterations,
+            c_random_state,
             c_labels,
             c_centers,
             ctypes.byref(c_iter),
