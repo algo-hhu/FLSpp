@@ -1,0 +1,41 @@
+[tool.poetry]
+name = "flspp"
+version = "0.1.0"
+description = ""
+authors = ["Lukas Drexler <lukas.drexler@hhu.de>", "Giulia Baldini <giulia.baldini@hhu.de>"]
+readme = "README.md"
+packages = [
+    { include = "flspp" }
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+scikit-learn = "^1.4.2"
+numpy = "^1.26.4"
+
+
+[tool.poetry.group.dev.dependencies]
+black = {extras = ["jupyter"], version = "^24.4.2"}
+pre-commit = "^2.14.0"
+flake8 = "^3.9.2"
+mypy = "^1.10.0"
+
+
+[tool.poetry.group.test.dependencies]
+pandas = "^2.2.2"
+
+[tool.poetry.build]
+script = "build.py"
+generate-setup-file = true
+
+[build-system]
+requires = ["poetry-core", "setuptools"]
+build-backend = "poetry.core.masonry.api"
+
+[virtualenvs]
+create = true
+in-project = true
+
+[tool.isort]
+profile = "black"
+line_length = 88
