@@ -17,6 +17,8 @@ In [2] it is shown that `O(k log log k)` local search iterations yield a constan
 
 The interface is built in the same way as scikit-learn's KMeans for better compatibility.
 
+## References
+
 [1] Theo Conrads, Lukas Drexler, Joshua Könen, Daniel R. Schmidt and Melanie Schmidt. "Local Search k-means++ with Foresight" (2024)
 
 [2] Silvio Lattanzi and Christian Sohler. A better k-means++ algorithm via local search. In Proc.444
