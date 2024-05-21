@@ -19,6 +19,7 @@ black = {extras = ["jupyter"], version = "^24.4.2"}
 pre-commit = "^2.14.0"
 flake8 = "^3.9.2"
 mypy = "^1.10.0"
+importlib-metadata = "4.13.0"
 
 
 [tool.poetry.group.test.dependencies]
