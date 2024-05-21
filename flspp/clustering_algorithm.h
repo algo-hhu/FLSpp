@@ -207,7 +207,7 @@ public:
 
 	int local_search_steps = 25;
 
-	int max_size_points = 1; // if size of pointset is exceeding this value we dont compute all pairwise distances but compute the corresponding distances each time
+	std::size_t max_size_points = 1; // if size of pointset is exceeding this value we dont compute all pairwise distances but compute the corresponding distances each time
 	bool all_distances_computed = false;
 
 	LOCAL_SEARCH(std::vector<Point> _points) : GREEDY_KMEANS(_points) { init_values(); }

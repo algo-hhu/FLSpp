@@ -73,12 +73,12 @@ extern "C"
         memcpy(labels, flspp_output.final_labels.data(), n * sizeof(int));
 
         // flspp_output has vector<Point> attribute final_centers, containing the final centers as instances of class Point
-        for (int j = 0; j < k; ++j)
+        for (uint j = 0; j < k; ++j)
         {
             // get coordinates of j-th center
             std::vector<double> center_coordinates = flspp_output.final_centers[j].coordinates;
             // We save it in a continuous array
-            for (int l = 0; l < d; ++l)
+            for (uint l = 0; l < d; ++l)
             {
                 centers[j * d + l] = center_coordinates[l];
                 // std::cout << centers[j][l] << " ";
