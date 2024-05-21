@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "flspp"
-version = "0.1.0"
+version = "0.1.1"
 description = ""
 authors = ["Lukas Drexler <lukas.drexler@hhu.de>", "Giulia Baldini <giulia.baldini@hhu.de>"]
 readme = "README.md"
