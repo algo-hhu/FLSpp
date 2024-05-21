@@ -17,6 +17,10 @@ In [2] it is shown that `O(k log log k)` local search iterations yield a constan
 
 The interface is built in the same way as scikit-learn's KMeans for better compatibility.
 
+In the following plots, we compare the performance of FLS++ (GFLS++) with various local search steps (5, 10, 15) with k-means++ (kM++), greedy k-means++ (GkM++) and the local search algorithm [2] with 25 local search steps (GLS++). The results are computed for the [KDD Phy Test](https://www.kdd.org/kdd-cup/view/kdd-cup-2004/data) and the [Tower](https://www.worldscientific.com/doi/abs/10.1142/S0218195908002787) datasets and averaged over 50 runs.
+
+![Boxplot Comparison for FLS++](https://github.com/algo-hhu/FLSpp/blob/main/images/boxplots.png)
+
 ## References
 
 [1] Theo Conrads, Lukas Drexler, Joshua Könen, Daniel R. Schmidt and Melanie Schmidt. "Local Search k-means++ with Foresight" (2024)
