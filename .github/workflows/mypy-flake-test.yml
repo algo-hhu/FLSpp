@@ -45,4 +45,4 @@ jobs:
           poetry run flake8 flspp/
       - name: Run Tests
         run: |
-          poetry run pytest tests/
+          poetry run python -m unittest discover tests -v
