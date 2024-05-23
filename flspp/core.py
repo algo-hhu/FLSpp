@@ -45,7 +45,7 @@ class FLSpp(KMeans):
         if sample_weight is not None:
             raise NotImplementedError("Sample weights are not yet supported.")
 
-        X = self._validate_data(
+        _X = self._validate_data(
             X,
             accept_sparse="csr",
             dtype=[np.float64, np.float32],
@@ -56,18 +56,19 @@ class FLSpp(KMeans):
         sample_weight = _check_sample_weight(sample_weight, X, dtype=type(X))
         self._n_threads = _openmp_effective_n_threads()
 
-        n_samples = len(X)
-        self.n_features_in_ = len(X[0])
+        n_samples = _X.shape[0]
+        self.n_features_in_ = _X.shape[1]
 
         if n_samples < self.n_clusters:
             raise ValueError(
                 f"n_samples={n_samples} should be >= n_clusters={self.n_clusters}."
             )
 
+        assert isinstance(_X, np.ndarray), type(_X)
+
+        _X = np.ascontiguousarray(_X)
         # Declare c types
-        c_array = (ctypes.POINTER(ctypes.c_double) * n_samples)()
-        for i in range(n_samples):
-            c_array[i] = (ctypes.c_double * self.n_features_in_)(*X[i])  # type: ignore
+        c_array = _X.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
         c_n = ctypes.c_uint(n_samples)
         c_d = ctypes.c_uint(self.n_features_in_)
         c_k = ctypes.c_uint(self.n_clusters)
