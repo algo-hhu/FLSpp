@@ -5,7 +5,7 @@
 #include "additional_vector_stuff.h"
 #include "makros.h"
 
-std::vector<Point> array_to_vector(double **array, int rows, int columns)
+std::vector<Point> array_to_vector(double *array, int rows, int columns)
 {
 
     std::vector<Point> points;
@@ -15,7 +15,7 @@ std::vector<Point> array_to_vector(double **array, int rows, int columns)
         std::vector<double> row;
         for (int j = 0; j < columns; ++j)
         {
-            row.push_back(array[i][j]);
+            row.push_back(array[i * columns + j]);
         }
         Point p = Point(columns, i, row);
         points.push_back(p);
@@ -39,7 +39,7 @@ extern "C"
     __declspec(dllexport)
 #endif
     double
-    cluster(double **array,
+    cluster(double *array,
             uint n,
             uint d,
             uint k,
