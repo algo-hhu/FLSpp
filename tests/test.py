@@ -3,6 +3,7 @@ from typing import Tuple
 
 import numpy as np
 import pandas as pd
+from sklearn.utils._param_validation import InvalidParameterError
 
 from flspp import FLSpp
 
@@ -149,6 +150,11 @@ class TestFLSPP(unittest.TestCase):
         flspp.fit(data)
 
         assert_equals_computed(flspp, data)
+
+    def test_n_clusters(self) -> None:
+        flspp = FLSpp(n_clusters=0)
+
+        self.assertRaises(InvalidParameterError, flspp.fit, self.example_data)
 
 
 if __name__ == "__main__":

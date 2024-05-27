@@ -59,6 +59,7 @@ class FLSpp(KMeans):
             dtype=[np.float64, np.float32],
             order="C",
             accept_large_sparse=False,
+            copy=False,
         )
 
         sample_weight = _check_sample_weight(sample_weight, X, dtype=type(X))
