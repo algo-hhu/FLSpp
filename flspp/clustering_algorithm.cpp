@@ -44,12 +44,12 @@ bool Clustering_Algorithm::update_labels()
 	int current_min_label;
 	double lastvalue = 0;
 
-	for (int i = 0; i < points.size(); ++i)
+	for (std::size_t i = 0; i < points.size(); ++i)
 	{
 		current_min_dist = std::numeric_limits<double>::max();
 		current_min_label = -1;
 
-		for (int j = 0; j < centers.size(); ++j)
+		for (std::size_t j = 0; j < centers.size(); ++j)
 		{
 			double dist = euclidean_distance_squared(points[i], centers[j]);
 			/*if (dist < closest_center_distances[i]) {
@@ -80,9 +80,9 @@ double Clustering_Algorithm::get_cost(std::vector<Point> _centers)
 	std::vector<double> _closest_center_distances = std::vector<double>(points.size(), std::numeric_limits<double>::max());
 	double _cumsum = 0;
 
-	for (int i = 0; i < points.size(); ++i)
+	for (std::size_t i = 0; i < points.size(); ++i)
 	{
-		for (int j = 0; j < _centers.size(); ++j)
+		for (std::size_t j = 0; j < _centers.size(); ++j)
 		{
 			double dist = euclidean_distance_squared(points[i], _centers[j]);
 			if (dist < _closest_center_distances[i])
@@ -106,7 +106,7 @@ void Clustering_Algorithm::init_values()
 	// 1. calculate mean along each coordinate
 	int d = points[0].dimension;
 	std::vector<double> means(d);
-	for (int i = 0; i < points.size(); i++)
+	for (std::size_t i = 0; i < points.size(); i++)
 	{
 		for (int j = 0; j < d; j++)
 		{
@@ -119,7 +119,7 @@ void Clustering_Algorithm::init_values()
 	}
 	// 2. calculate the variance along each axis
 	std::vector<double> var(d);
-	for (int i = 0; i < points.size(); i++)
+	for (std::size_t i = 0; i < points.size(); i++)
 	{
 		for (int j = 0; j < d; j++)
 		{
@@ -160,7 +160,7 @@ int Clustering_Algorithm::choose_center()
 	// double randnr = rand() * cumsums.back() / RAND_MAX;
 	double randnr = unif_generator.getRandomNumber() * cumsums.back();
 
-	for (int i = 0; i < cumsums.size(); ++i)
+	for (std::size_t i = 0; i < cumsums.size(); ++i)
 	{
 		if (randnr < cumsums[i])
 		{
@@ -194,7 +194,7 @@ void Clustering_Algorithm::update_centroids()
 	}*/
 
 	// iterate over all points
-	for (int i = 0; i < points.size(); ++i)
+	for (std::size_t i = 0; i < points.size(); ++i)
 	{
 		int label = labels[i]; // check to which cluster the current point belongs
 
@@ -205,7 +205,7 @@ void Clustering_Algorithm::update_centroids()
 		cluster_sizes[label] += 1; // increase size couter by one, as one point has been added
 	}
 
-	for (int i = 0; i < centroids.size(); ++i)
+	for (std::size_t i = 0; i < centroids.size(); ++i)
 	{
 		for (int j = 0; j < dim; ++j)
 		{
@@ -213,7 +213,7 @@ void Clustering_Algorithm::update_centroids()
 		}
 	}
 
-	for (int i = 0; i < centroids.size(); i++)
+	for (std::size_t i = 0; i < centroids.size(); i++)
 	{
 		Point new_center(dim, i, centroids[i]);
 		centers[i] = new_center;
@@ -239,7 +239,7 @@ void Clustering_Algorithm::compute_centroids(std::vector<Point> &new_centers)
 	}*/
 
 	// iterate over all points
-	for (int i = 0; i < points.size(); ++i)
+	for (std::size_t i = 0; i < points.size(); ++i)
 	{
 		int label = labels[i]; // check to which cluster the current point belongs
 
@@ -250,7 +250,7 @@ void Clustering_Algorithm::compute_centroids(std::vector<Point> &new_centers)
 		cluster_sizes[label] += 1; // increase size couter by one, as one point has been added
 	}
 
-	for (int i = 0; i < centroids.size(); ++i)
+	for (std::size_t i = 0; i < centroids.size(); ++i)
 	{
 		for (int j = 0; j < dim; ++j)
 		{
@@ -258,7 +258,7 @@ void Clustering_Algorithm::compute_centroids(std::vector<Point> &new_centers)
 		}
 	}
 
-	for (int i = 0; i < centroids.size(); i++)
+	for (std::size_t i = 0; i < centroids.size(); i++)
 	{
 		Point new_center(dim, i, centroids[i]);
 		new_centers[i] = new_center;
@@ -280,7 +280,8 @@ void Clustering_Algorithm::compute_centroids(std::vector<int> const &input_label
 		respective cluster.
 	*/
 
-	int i, j, label;
+	std::size_t i;
+	int j, label;
 
 	// iterate over all points
 	for (i = 0; i < points.size(); ++i)
@@ -302,7 +303,7 @@ void Clustering_Algorithm::compute_centroids(std::vector<int> const &input_label
 		}
 	}
 
-	for (int i = 0; i < centroids.size(); i++)
+	for (std::size_t i = 0; i < centroids.size(); i++)
 	{
 		Point new_center(dim, i, centroids[i]);
 		new_centers[i] = new_center;
@@ -316,7 +317,7 @@ bool Clustering_Algorithm::brute_force_labels_compare()
 #endif // !DEBUG
 
 	std::vector<double> new_cumsum(points.size());
-	for (int i = 0; i < points.size(); i++)
+	for (std::size_t i = 0; i < points.size(); i++)
 	{
 		if (euclidean_distance_squared(points[i], centers[labels[i]]) != closest_center_distances[i])
 		{
@@ -329,7 +330,7 @@ bool Clustering_Algorithm::brute_force_labels_compare()
 		double computed_second_closest_distance = std::numeric_limits<double>::max();
 
 		// iterate through every point and center, check if current set labels and distances are correct
-		for (int j = 0; j < centers.size(); j++)
+		for (std::size_t j = 0; j < centers.size(); j++)
 		{
 			double new_distance = euclidean_distance_squared(points[i], centers[j]);
 			if (new_distance <= computed_closest_distance)
@@ -561,7 +562,7 @@ bool KMEANS::brute_force_labels_compare(information_clustering &info)
 #endif // !DEBUG
 
 	std::vector<double> new_cumsum(points.size());
-	for (int i = 0; i < points.size(); i++)
+	for (std::size_t i = 0; i < points.size(); i++)
 	{
 		if (euclidean_distance_squared(points[i], info.centers[info.labels[i]]) != info.closest_center_distances[i])
 		{
@@ -582,7 +583,7 @@ bool KMEANS::brute_force_labels_compare(information_clustering &info)
 		int second_closest_index = -1;
 
 		// iterate through every point and center, check if current set labels and distances are correct
-		for (int j = 0; j < centers.size(); j++)
+		for (std::size_t j = 0; j < centers.size(); j++)
 		{
 			double new_distance = euclidean_distance_squared(points[i], centers[j]);
 			if (new_distance <= computed_closest_distance)
@@ -653,7 +654,7 @@ bool KMEANS::brute_force_labels_compare(information_clustering &info)
  */
 double KMEANS::get_cost(std::vector<Point> &_centers, information_clustering &info, std::function<double(std::vector<Point> &, std::vector<Point> &, int, int)> distance_function)
 {
-	for (int i = 0; i < points.size(); ++i)
+	for (std::size_t i = 0; i < points.size(); ++i)
 	{
 		double current_min_dist = std::numeric_limits<double>::max();
 		int current_min_dist_label = -1;
@@ -661,7 +662,7 @@ double KMEANS::get_cost(std::vector<Point> &_centers, information_clustering &in
 		int current_second_min_dist_label = -1;
 
 		// iterate through every center combination and update closest and second-closest
-		for (int j = 0; j < centers.size(); ++j)
+		for (std::size_t j = 0; j < centers.size(); ++j)
 		{
 			// double dist = euclidean_distance_squared(points[i], new_centroids[j]);
 			double dist = distance_function(points, _centers, i, j);
@@ -710,7 +711,7 @@ std::pair<double, std::vector<bool>> KMEANS::get_updated_cost(Point added_center
 	double new_dist = 0;
 	std::vector<bool> new_closest_change(points.size());
 
-	for (int i = 0; i < points.size(); i++)
+	for (std::size_t i = 0; i < points.size(); i++)
 	{
 		new_dist = euclidean_distance_squared(points[i], added_center_point);
 		if (closest_center_distances[i] < new_dist)
@@ -735,7 +736,7 @@ std::pair<double, std::vector<bool>> KMEANS::get_updated_cost(Point added_center
 void KMEANS::update_labels(int added_center, std::vector<bool> &new_closest)
 {
 	double new_dist = 0;
-	for (int i = 0; i < points.size(); i++)
+	for (std::size_t i = 0; i < points.size(); i++)
 	{
 		new_dist = euclidean_distance_squared(points[i], centers[added_center]);
 
@@ -818,7 +819,7 @@ bool KMEANS::brute_force_labels_compare()
 #endif // !DEBUG
 
 	std::vector<double> new_cumsum(points.size());
-	for (int i = 0; i < points.size(); i++)
+	for (std::size_t i = 0; i < points.size(); i++)
 	{
 		if (euclidean_distance_squared(points[i], centers[labels[i]]) != closest_center_distances[i])
 		{
@@ -839,7 +840,7 @@ bool KMEANS::brute_force_labels_compare()
 		int second_closest_index = -1;
 
 		// iterate through every point and center, check if current set labels and distances are correct
-		for (int j = 0; j < centers.size(); j++)
+		for (std::size_t j = 0; j < centers.size(); j++)
 		{
 			double new_distance = euclidean_distance_squared(points[i], centers[j]);
 			if (new_distance <= computed_closest_distance)
@@ -906,7 +907,7 @@ bool KMEANS::update_labels()
 {
 	bool change = false;
 
-	for (int i = 0; i < points.size(); ++i)
+	for (std::size_t i = 0; i < points.size(); ++i)
 	{
 		double current_min_dist = std::numeric_limits<double>::max();
 		int current_min_dist_label = -1;
@@ -914,7 +915,7 @@ bool KMEANS::update_labels()
 		int current_second_min_dist_label = -1;
 
 		// iterate through every center combination and update closest and second-closest
-		for (int j = 0; j < centers.size(); ++j)
+		for (std::size_t j = 0; j < centers.size(); ++j)
 		{
 			double dist = euclidean_distance_squared(points[i], centers[j]);
 
@@ -1002,7 +1003,7 @@ output_algorithm GREEDY_KMEANS::algorithm(int k, bool init, double _old_cost)
 void GREEDY_KMEANS::update_distances()
 {
 	// using current labels update the distances
-	for (int i = 0; i < points.size(); i++)
+	for (std::size_t i = 0; i < points.size(); i++)
 	{
 		closest_center_distances[i] = euclidean_distance_squared(points[i], centers[labels[i]]);
 		if (second_closest_labels[i] != -1)
@@ -1074,7 +1075,7 @@ void GREEDY_KMEANS::initialize_centers(int k)
 	while (centers.size() < k)
 	{
 		std::vector<int> candidates(z);
-		int best_candidate;
+		int best_candidate = 0;
 
 		std::pair<double, std::vector<bool>> updated_cost; // contains the new cost of the solution and a bool vector which points are assigned to this new center as closest
 		std::pair<double, std::vector<bool>> best_updated_cost;
@@ -1107,7 +1108,7 @@ bool GREEDY_KMEANS::update_labels()
 {
 	bool change = false;
 
-	for (int i = 0; i < points.size(); ++i)
+	for (std::size_t i = 0; i < points.size(); ++i)
 	{
 		double current_min_dist = std::numeric_limits<double>::max();
 		int current_min_dist_label = -1;
@@ -1115,7 +1116,7 @@ bool GREEDY_KMEANS::update_labels()
 		int current_second_min_dist_label = -1;
 
 		// iterate through every center combination and update closest and second-closest
-		for (int j = 0; j < centers.size(); ++j)
+		for (std::size_t j = 0; j < centers.size(); ++j)
 		{
 			double dist = euclidean_distance_squared(points[i], centers[j]);
 
@@ -1161,7 +1162,7 @@ bool GREEDY_KMEANS::compute_labels_from_given_centroids(std::vector<Point> &new_
 {
 	bool change = false;
 
-	for (int i = 0; i < points.size(); ++i)
+	for (std::size_t i = 0; i < points.size(); ++i)
 	{
 		double current_min_dist = std::numeric_limits<double>::max();
 		int current_min_dist_label = -1;
@@ -1169,7 +1170,7 @@ bool GREEDY_KMEANS::compute_labels_from_given_centroids(std::vector<Point> &new_
 		int current_second_min_dist_label = -1;
 
 		// iterate through every center combination and update closest and second-closest
-		for (int j = 0; j < new_centroids.size(); ++j)
+		for (std::size_t j = 0; j < new_centroids.size(); ++j)
 		{
 			double dist = euclidean_distance_squared(points[i], new_centroids[j]);
 
@@ -1215,7 +1216,7 @@ bool GREEDY_KMEANS::compute_labels_from_given_centroids(std::vector<Point> &new_
 {
 	bool change = false;
 
-	for (int i = 0; i < points.size(); ++i)
+	for (std::size_t i = 0; i < points.size(); ++i)
 	{
 		double current_min_dist = std::numeric_limits<double>::max();
 		int current_min_dist_label = -1;
@@ -1223,7 +1224,7 @@ bool GREEDY_KMEANS::compute_labels_from_given_centroids(std::vector<Point> &new_
 		int current_second_min_dist_label = -1;
 
 		// iterate through every center combination and update closest and second-closest
-		for (int j = 0; j < new_centroids.size(); ++j)
+		for (std::size_t j = 0; j < new_centroids.size(); ++j)
 		{
 			double dist = euclidean_distance_squared(points[i], new_centroids[j]);
 
@@ -1268,17 +1269,10 @@ bool GREEDY_KMEANS::compute_labels_from_given_centroids(std::vector<Point> &new_
 
 void LOCAL_SEARCH::update_labels_initialize_centers()
 {
-	double min_dist;
-	int min_label;
-
-	for (int i = 0; i < points.size(); ++i)
+	for (std::size_t i = 0; i < points.size(); ++i)
 	{
-		// min_dist = std::numeric_limits<double>::max();
-		min_label = -1;
-
 		for (int j = 0; j < centers.size(); ++j)
 		{
-			// double dist = all_pairwise_distances[i][centers[j].index];
 			double dist = get_pointwise_distance(i, centers[j].index);
 
 			// if center j is closer to point i than center(i)
@@ -1335,14 +1329,14 @@ void LOCAL_SEARCH::greedy_local_search_center()
 
 		// compute cost of current solution: compute distances of points to new center
 		std::vector<double> candidate_distances(points.size());
-		for (int j = 0; j < points.size(); j++)
+		for (std::size_t j = 0; j < points.size(); j++)
 		{
 			candidate_distances[j] = get_pointwise_distance(j, center_candidate);
 		}
 
 		std::vector<bool> candidate_is_closer(points.size(), false);
 		std::vector<double> new_cumsum(points.size());
-		for (int j = 0; j < points.size(); j++)
+		for (std::size_t j = 0; j < points.size(); j++)
 		{
 			// check if new center distance is better
 			if (labels[j] != i)
@@ -1390,7 +1384,7 @@ void LOCAL_SEARCH::greedy_local_search_center()
 	if (found_improvement)
 	{
 		cumsums = best_cumsum;
-		for (int j = 0; j < points.size(); j++)
+		for (std::size_t j = 0; j < points.size(); j++)
 		{
 
 			if (best_candidate_closer[j])
@@ -1454,7 +1448,7 @@ void LOCAL_SEARCH::greedy_local_search_center()
 						int second_closest = second_closest_labels[j];
 						int third_index = -1;
 						double third_closest_distance = -1;
-						for (int b = 0; b < third_closest_info.first.size(); b++)
+						for (std::size_t b = 0; b < third_closest_info.first.size(); b++)
 						{
 							if (third_closest_info.first[b] != closest_index && third_closest_info.first[b] != second_closest)
 							{
@@ -1490,10 +1484,10 @@ void LOCAL_SEARCH::compute_all_pairwise_distances()
 	if (points.size() <= max_size_points)
 	{
 		all_pairwise_distances.reserve(points.size());
-		for (int i = 0; i < points.size(); i++)
+		for (std::size_t i = 0; i < points.size(); i++)
 		{
 			all_pairwise_distances.push_back(std::vector<double>(points.size(), 0));
-			for (int j = 0; j < i; j++)
+			for (std::size_t j = 0; j < i; j++)
 			{
 				all_pairwise_distances[i][j] = euclidean_distance_squared(points[i], points[j]);
 				all_pairwise_distances[j][i] = all_pairwise_distances[i][j];
@@ -1508,7 +1502,7 @@ double LOCAL_SEARCH::get_cost(std::vector<Point> &centers, std::vector<double> &
 	double min_dist, min_second_dist;
 	int min_label;
 
-	for (int i = 0; i < points.size(); ++i)
+	for (std::size_t i = 0; i < points.size(); ++i)
 	{
 		min_label = -1;
 		min_dist = std::numeric_limits<double>::max();
@@ -1593,7 +1587,7 @@ std::pair<std::vector<int>, std::vector<double>> LOCAL_SEARCH::find_3_closest(in
 	second_closest = -1;
 	third_closest = -1;
 
-	for (int i = 0; i < centers.size(); i++)
+	for (std::size_t i = 0; i < centers.size(); i++)
 	{
 		// double current_distance = all_pairwise_distances[centers[i].index][point];		// error candidate
 		double current_distance = get_pointwise_distance(point, centers[i].index);
@@ -1643,16 +1637,9 @@ output_algorithm LOCAL_SEARCH::algorithm(int k, bool init, double _old_cost)
 	if (init)
 		initialize_centers(k);
 
-	double old_ls_cost = _old_cost;
-
 	for (int i = 0; i < local_search_steps; i++)
 	{
 		greedy_local_search_center();
-
-		/*if (cumsums.back() != old_ls_cost) {
-			std::cout << "iteration "<< i << ": improvement to " << cumsums.back() << std::endl;
-		}
-		old_ls_cost = cumsums.back();*/
 	}
 	brute_force_labels_compare();
 
@@ -1698,7 +1685,6 @@ output_algorithm LOCAL_SEARCH::algorithm(int k, bool init, double _old_cost)
 
 void FLSPP::local_search_foresight_iterations(int iterations_foresight)
 {
-	double new_cost;
 
 	std::vector<Point> centroids_best(centers.size());
 	std::vector<double> closest_center_distances_best(points.size());
@@ -1707,7 +1693,6 @@ void FLSPP::local_search_foresight_iterations(int iterations_foresight)
 	std::vector<int> second_closest_center_distances_labels_best(points.size());
 	std::vector<double> new_cumsums_best(points.size());
 	std::vector<double> new_clustercosts_best(centers.size());
-	bool change_best = false;
 
 	// std::vector<Point> centroids_new(centers.size());
 	std::vector<double> closest_center_distances_changed(points.size());
@@ -1716,7 +1701,6 @@ void FLSPP::local_search_foresight_iterations(int iterations_foresight)
 	std::vector<int> second_closest_center_distances_changed_labels(points.size());
 	std::vector<double> new_cumsums(points.size());
 	std::vector<double> new_clustercosts(centers.size());
-	bool change_new = false;
 
 	std::vector<Point> new_centroids(centers.size());
 	std::vector<double> new_distances(points.size());
@@ -1745,7 +1729,7 @@ void FLSPP::local_search_foresight_iterations(int iterations_foresight)
 		int center_candidate = choose_center();
 
 		// Compute the distances of sampled point to every other point. Could be precomputed but cost decrease might be most likely worse
-		for (int i = 0; i < points.size(); i++)
+		for (std::size_t i = 0; i < points.size(); i++)
 		{
 			new_distances[i] = euclidean_distance_squared(points[i], points[center_candidate]);
 		}
@@ -1755,7 +1739,7 @@ void FLSPP::local_search_foresight_iterations(int iterations_foresight)
 			second_closest_center_distances_best, second_closest_center_distances_labels_best, new_cumsums_best, new_clustercosts_best);*/
 		compute_centroids(labels, centroids_best);
 		double new_cost = 0;
-		for (int b = 0; b < points.size(); b++)
+		for (std::size_t b = 0; b < points.size(); b++)
 		{
 			new_cost += euclidean_distance_squared(points[b], centroids_best[labels[b]]);
 		}
@@ -1763,15 +1747,14 @@ void FLSPP::local_search_foresight_iterations(int iterations_foresight)
 		// set starting cost of solution
 		// double current_min_cost = new_cumsums_best.back();
 		double current_min_cost = new_cost;
-		int best_change = -1;
+		// int best_change = -1;
 
 		// for (int l = 0; l < my_conf.exchange_center_order.size(); l++) { // we use self defined ordering
 
 		// we iterate over every possible exchange situation and save the best choice
-		int i;
 		for (int i = 0; i < centers.size(); i++)
 		{ // since we always do these number of iterations we do not care about the order of exchanges
-			for (int j = 0; j < points.size(); j++)
+			for (std::size_t j = 0; j < points.size(); j++)
 			{
 				if (labels[j] != i)
 				{ // center was not exchanged
@@ -1799,7 +1782,7 @@ void FLSPP::local_search_foresight_iterations(int iterations_foresight)
 
 			compute_centroids(new_labels, new_centroids);
 			double new_cost = 0;
-			for (int b = 0; b < points.size(); b++)
+			for (std::size_t b = 0; b < points.size(); b++)
 			{
 				new_cost += euclidean_distance_squared(points[b], new_centroids[new_labels[b]]);
 			}
@@ -1810,7 +1793,7 @@ void FLSPP::local_search_foresight_iterations(int iterations_foresight)
 
 				centroids_best = new_centroids;
 				current_min_cost = new_cost;
-				best_change = i;
+				// best_change = i;
 			}
 		}
 
@@ -1823,7 +1806,7 @@ void FLSPP::local_search_foresight_iterations(int iterations_foresight)
 		cumsums = new_cumsums_best;*/
 
 		centers = centroids_best;
-		bool change = compute_labels_from_given_centroids(centroids_best, closest_center_distances, labels, second_closest_center_distances, second_closest_labels, cumsums);
+		compute_labels_from_given_centroids(centroids_best, closest_center_distances, labels, second_closest_center_distances, second_closest_labels, cumsums);
 
 		// check for correctness (if makro is defined)
 		brute_force_labels_compare();
@@ -1941,7 +1924,7 @@ void FLSPP::set_clustercosts()
 {
 	clustercosts.resize(centers.size());
 
-	for (int i = 0; i < points.size(); i++)
+	for (std::size_t i = 0; i < points.size(); i++)
 	{
 		clustercosts[labels[i]] += closest_center_distances[i];
 	}
@@ -1952,12 +1935,12 @@ void FLSPP_configuration::set_decreasing_clustercosts_order(std::vector<double> 
 	// create pairs
 	std::vector<std::pair<double, int>> pairs;
 	pairs.reserve(clustgercosts.size());
-	for (int i = 0; i < clustgercosts.size(); i++)
+	for (std::size_t i = 0; i < clustgercosts.size(); i++)
 	{
 		pairs.push_back(std::make_pair(clustgercosts[i], i));
 	}
 	std::sort(pairs.begin(), pairs.end());
-	for (int i = 0; i < clustgercosts.size(); i++)
+	for (std::size_t i = 0; i < clustgercosts.size(); i++)
 	{
 		exchange_center_order[i] = pairs[i].second;
 	}
