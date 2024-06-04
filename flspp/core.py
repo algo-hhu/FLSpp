@@ -113,7 +113,6 @@ class FLSpp(KMeans):
         )
 
         self.labels_ = np.ctypeslib.as_array(c_labels)
-
         self._n_features_out = len(self.cluster_centers_)
         self.n_iter_ = c_iter.value
 
