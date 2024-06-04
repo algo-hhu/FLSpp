@@ -25,7 +25,7 @@ mypy = "^1.10.0"
 pandas = "^2.2.2"
 
 [tool.poetry.build]
-script = "build.py"
+script = "build_extension.py"
 generate-setup-file = true
 
 [build-system]
