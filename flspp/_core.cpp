@@ -5,6 +5,8 @@
 #include "additional_vector_stuff.h"
 #include "makros.h"
 
+typedef unsigned int uint;
+
 std::vector<Point> array_to_vector(double *array, int rows, int columns)
 {
 

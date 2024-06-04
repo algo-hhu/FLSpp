@@ -255,7 +255,7 @@ public:
 	FLSPP_configuration(int _k) : k(_k), exchange_center_order(_k) {}
 
 	// helper function for checking if we just want to consider the default ordering
-	bool default_order() { return not(decreasing_clustercosts or exchange_closest_center); }
+	bool default_order() { return !(decreasing_clustercosts || exchange_closest_center); }
 
 	// helper functions for setting the order of considering the centers
 	void set_default_order() { std::iota(exchange_center_order.begin(), exchange_center_order.end(), 0); }
