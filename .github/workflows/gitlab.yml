@@ -1,0 +1,28 @@
+name: Trigger Gitlab Job
+on:
+    push:
+      branches:
+        - main
+      paths:
+        - "flspp/**"
+        - "tests/**"
+        - "poetry.lock"
+    pull_request:
+      paths:
+        - "flspp/**"
+        - "tests/**"
+        - "poetry.lock"
+    # Allows you to run this workflow manually from the Actions tab
+    workflow_dispatch:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Trigger Job
+      uses: appleboy/gitlab-ci-action@master
+      with:
+        url: "https://gitlab.cs.uni-duesseldorf.de/"
+        token: ${{ secrets.RUN_TOKEN }}
+        project_id: 3102
