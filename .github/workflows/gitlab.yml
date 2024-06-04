@@ -1,4 +1,4 @@
-name: Trigger Gitlab Job
+name: Trigger Gitlab Pipeline
 on:
     push:
       branches:
@@ -17,12 +17,15 @@ on:
 
 jobs:
   build:
-    name: Build
+    name: Trigger GitLab Pipeline
     runs-on: ubuntu-latest
     steps:
     - name: Trigger Job
-      uses: appleboy/gitlab-ci-action@master
+      uses: digital-blueprint/gitlab-pipeline-trigger-action@v1
       with:
-        url: "https://gitlab.cs.uni-duesseldorf.de/"
-        token: ${{ secrets.RUN_TOKEN }}
-        project_id: 3102
+        host: 'gitlab.cs.uni-duesseldorf.de'
+        trigger_token: ${{ secrets.DEPLOY_TRIGGER_TOKEN }}
+        access_token: ${{ secrets.DEPLOY_ACCESS_TOKEN }}
+        id: '3102'
+        ref: 'main'
+        variables: '{"CI_COMMIT_TAG":"flspp:a4821bf"}'
