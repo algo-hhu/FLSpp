@@ -21,7 +21,7 @@ In the following plots, we compare the performance of FLS++ (GFLS++) with variou
 
 
 <p align="center">
-  <img src="https://github.com/algo-hhu/FLSpp/blob/main/images/boxplots.png" alt="Boxplot Comparison for FLS++"/>
+  <img src="https://raw.githubusercontent.com/algo-hhu/FLSpp/main/images/boxplots.png" alt="Boxplot Comparison for FLS++"/>
 </p>
 
 ## References

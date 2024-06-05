@@ -28,4 +28,8 @@ jobs:
         access_token: ${{ secrets.DEPLOY_ACCESS_TOKEN }}
         id: '3102'
         ref: 'main'
-        variables: '{"PROJECT":"flspp"}'
+        variables: |
+          {
+            "PROJECT": "flspp",
+            "GIT_HASH": "${{ github.event.pull_request.head.sha || github.sha }}"
+          }
