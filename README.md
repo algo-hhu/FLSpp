@@ -98,7 +98,7 @@ poetry run python -m unittest discover tests -v
 
 ## Citation
 
-If you use this code, please cite the following paper:
+If you use this code, please cite [the following paper](https://arxiv.org/abs/2406.02739v1):
 
 ```
 Theo Conrads, Lukas Drexler, Joshua Könen, Daniel R. Schmidt and Melanie Schmidt. "Local Search k-means++ with Foresight" (2024). Accepted at SEA 2024.
