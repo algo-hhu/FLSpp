@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "flspp"
-version = "0.1.4"
+version = "0.1.5"
 description = "Implementation of the FLS++ algorithm for K-Means clustering."
 authors = ["Lukas Drexler <lukas.drexler@hhu.de>", "Giulia Baldini <giulia.baldini@hhu.de>"]
 readme = "README.md"
