@@ -154,7 +154,7 @@ class TestFLSPP(unittest.TestCase):
                 )
                 assert with_ls.inertia_ <= without_ls.inertia_, (
                     f"{dataset}, k={k}, "
-                    "with LS: {with_ls.inertia_} vs. without LS: {without_ls.inertia_}",
+                    f"with LS: {with_ls.inertia_} vs. without LS: {without_ls.inertia_}",
                 )
 
     def test_repeated_dataset(self) -> None:
