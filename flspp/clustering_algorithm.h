@@ -72,14 +72,13 @@ public:
 	/// <para>Here's how you could make a second paragraph in a description. <see cref="System::Console::WriteLine"/> for information about output statements.</para>
 	/// <seealso cref="MyClass::MyMethod2"/>
 	/// </summary>
-	Clustering_Algorithm(std::vector<Point> _points, std::size_t seed = 0) : points(_points), seed(seed){};
-	Clustering_Algorithm(std::string filepath, std::size_t seed = 0, char delimiter = ' ', int _max_number_iterations = 100) : seed(seed), maximum_number_iterations(_max_number_iterations)
-	{};
+	Clustering_Algorithm(std::vector<Point> _points, std::size_t seed = 0, int _max_number_iterations = 100) : points(_points), seed(seed), maximum_number_iterations(_max_number_iterations) {};
+	Clustering_Algorithm(std::string filepath, std::size_t seed = 0, char delimiter = ' ', int _max_number_iterations = 100) : seed(seed), maximum_number_iterations(_max_number_iterations){};
 
 	void set_centers(std::vector<Point> _centers) { centers = _centers; }
 
 	void init_values();			  // initialize the centers, distances, labels, cumsum
-	virtual bool update_labels (); // update labels to their closest center point
+	virtual bool update_labels(); // update labels to their closest center point
 	int choose_center();		  // choose point index according to km++ prob distibrution
 	void update_centroids();
 	void compute_centroids(std::vector<Point> &new_centers);
@@ -144,7 +143,7 @@ public:
 	std::vector<double> second_closest_center_distances;
 	std::vector<int> second_closest_labels; // vector containing label of second-closest center for each point
 
-	KMEANS(std::vector<Point> _points, std::size_t seed = 0) : Clustering_Algorithm(_points, seed) { init_values(); }
+	KMEANS(std::vector<Point> _points, std::size_t seed = 0, int _max_number_iterations = 100) : Clustering_Algorithm(_points, seed, _max_number_iterations) { init_values(); }
 	KMEANS(std::string filepath, std::size_t seed = 0, char delimiter = ' ', int _max_number_iterations = 100) : Clustering_Algorithm(filepath, seed, delimiter, _max_number_iterations) { init_values(); }
 
 	bool update_labels();
@@ -185,7 +184,7 @@ class GREEDY_KMEANS : public KMEANS
 public:
 	int z;
 
-	GREEDY_KMEANS(std::vector<Point> _points, int _z = -1, std::size_t seed = 0) : KMEANS(_points, seed), z(_z) {}
+	GREEDY_KMEANS(std::vector<Point> _points, std::size_t seed = 0, int _max_number_iterations = 100, int _z = -1) : KMEANS(_points, seed, _max_number_iterations), z(_z) {}
 	GREEDY_KMEANS(std::string filepath, std::size_t seed = 0, char delimiter = ' ', int _max_number_iterations = 100, int _z = -1) : KMEANS(filepath, seed, delimiter, _max_number_iterations), z(_z) {}
 
 	bool update_labels() override;
@@ -279,11 +278,12 @@ public:
 
 	bool decreasing_clustercosts_ordering = true;
 
-	FLSPP(std::vector<Point> _points, int _z = -1, std::size_t seed = 0, int _max_number_iterations = 100, int _local_search_steps = 20) : GREEDY_KMEANS(_points, _z, seed) {
+	FLSPP(std::vector<Point> _points, std::size_t seed = 0, int _max_number_iterations = 100, int _z = -1, int _local_search_steps = 20) : GREEDY_KMEANS(_points, seed, _max_number_iterations, _z)
+	{
 		max_number_iterations_foresight = _local_search_steps; // If heuristic break_after_successive_fails is activated we might terminate faster!
 	}
 
-	FLSPP(std::string filepath, std::size_t seed = 0, char delimiter = ' ', int _max_number_iterations = 100, int _z = -1, int _local_search_steps = -1) : GREEDY_KMEANS(filepath, seed, delimiter, maximum_number_iterations, _z)
+	FLSPP(std::string filepath, std::size_t seed = 0, char delimiter = ' ', int _max_number_iterations = 100, int _z = -1, int _local_search_steps = -1) : GREEDY_KMEANS(filepath, seed, delimiter, _max_number_iterations, _z)
 	{
 		max_number_iterations_foresight = _local_search_steps; // If heuristic break_after_successive_fails is activated we might terminate faster!
 	}
