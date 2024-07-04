@@ -279,7 +279,9 @@ public:
 
 	bool decreasing_clustercosts_ordering = true;
 
-	FLSPP(std::vector<Point> _points, int _z = -1, std::size_t seed = 0, int _max_number_iterations = 100, int _local_search_steps = 20) : GREEDY_KMEANS(_points, _z, seed) {}
+	FLSPP(std::vector<Point> _points, int _z = -1, std::size_t seed = 0, int _max_number_iterations = 100, int _local_search_steps = 20) : GREEDY_KMEANS(_points, _z, seed) {
+		max_number_iterations_foresight = _local_search_steps; // If heuristic break_after_successive_fails is activated we might terminate faster!
+	}
 
 	FLSPP(std::string filepath, std::size_t seed = 0, char delimiter = ' ', int _max_number_iterations = 100, int _z = -1, int _local_search_steps = -1) : GREEDY_KMEANS(filepath, seed, delimiter, maximum_number_iterations, _z)
 	{
