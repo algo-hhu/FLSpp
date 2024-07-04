@@ -20,10 +20,12 @@ class Point
 public:
     int dimension;
     int index;
+    double weight = 1;
 
     std::vector<double> coordinates;
 
     Point(int dim, int ind, std::vector<double> coord);
+    Point(int dim, int ind, double w, std::vector<double> coord);
     Point(Point const &p);
     Point();
 

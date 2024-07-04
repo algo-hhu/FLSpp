@@ -7,7 +7,7 @@
 
 typedef unsigned int uint;
 
-std::vector<Point> array_to_vector(double *array, int rows, int columns)
+std::vector<Point> array_to_vector(double *array, double *weight, int rows, int columns)
 {
 
     std::vector<Point> points;
@@ -19,7 +19,7 @@ std::vector<Point> array_to_vector(double *array, int rows, int columns)
         {
             row.push_back(array[i * columns + j]);
         }
-        Point p = Point(columns, i, row);
+        Point p = Point(columns, i, weight[i], row);
         points.push_back(p);
     }
 
@@ -42,6 +42,7 @@ extern "C"
 #endif
     double
     cluster(double *array,
+            double *weights,
             uint n,
             uint d,
             uint k,
@@ -65,7 +66,7 @@ extern "C"
          */
 
         // transform input array to vector of "Points" (to be able to use existing constructor for FLSPP object)
-        std::vector<Point> points = array_to_vector(array, n, d);
+        std::vector<Point> points = array_to_vector(array, weights, n, d);
 
         // create FLSPP object from vector of points
         FLSPP my_flspp(points, -1, seed, lloyd_iterations, local_search_iterations);
