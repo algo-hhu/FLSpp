@@ -19,7 +19,7 @@ class FLSpp(KMeans):
 
     _parameter_constraints: dict = {
         "n_clusters": [Interval(Integral, 1, None, closed="left")],
-        "lloyd_iterations": [Interval(Integral, 1, None, closed="left")],
+        "max_iter": [Interval(Integral, 1, None, closed="left")],
         "local_search_iterations": [Interval(Integral, 1, None, closed="left")],
         "random_state": [None, Interval(Integral, 0, None, closed="left")],
     }
@@ -27,12 +27,12 @@ class FLSpp(KMeans):
     def __init__(
         self,
         n_clusters: int,
-        lloyd_iterations: int = 100,
-        local_search_iterations: int = 100,
+        max_iter: int = 100,
+        local_search_iterations: int = 20,
         random_state: Optional[int] = None,
     ):
         self.n_clusters = n_clusters
-        self.lloyd_iterations = lloyd_iterations
+        self.max_iter = max_iter
         self.local_search_iterations = local_search_iterations
         self.random_state = random_state
 
@@ -83,7 +83,7 @@ class FLSpp(KMeans):
         c_n = ctypes.c_uint(n_samples)
         c_d = ctypes.c_uint(self.n_features_in_)
         c_k = ctypes.c_uint(self.n_clusters)
-        c_ll_iterations = ctypes.c_uint(self.lloyd_iterations)
+        c_ll_iterations = ctypes.c_uint(self.max_iter)
         c_ls_iterations = ctypes.c_uint(self.local_search_iterations)
         c_random_state = ctypes.c_size_t(_seed)
         c_labels = (ctypes.c_int * n_samples)()

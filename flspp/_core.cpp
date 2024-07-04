@@ -68,7 +68,7 @@ extern "C"
         std::vector<Point> points = array_to_vector(array, n, d);
 
         // create FLSPP object from vector of points
-        FLSPP my_flspp(points, -1, seed);
+        FLSPP my_flspp(points, -1, seed, lloyd_iterations, local_search_iterations);
 
         // output_algorithm object contains information such as final labels and final centers
         output_algorithm flspp_output = my_flspp.algorithm(k);
