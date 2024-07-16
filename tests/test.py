@@ -4,6 +4,7 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 from sklearn.utils._param_validation import InvalidParameterError
+from tqdm import tqdm
 
 from flspp import FLSpp
 
@@ -124,32 +125,71 @@ class TestFLSPP(unittest.TestCase):
 
         _ = flspp.get_params()
 
-    def test_rectangles(self) -> None:
-        with open("datasets/rectangles.txt") as f:
-            data = [list(map(float, line.split())) for line in f]
+    def test_local_search(self) -> None:
+        print()
+        for dataset, k, skip in [
+            ("pr91.txt", 50, 1),
+            ("rectangles.txt", 36, 0),
+        ]:
+            with open(f"datasets/{dataset}") as f:
+                data = [list(map(float, line.split())) for line in f.readlines()[skip:]]
 
-        flspp = FLSpp(n_clusters=36)
-        flspp.fit(data)
+            with self.subTest(msg=f"{dataset}_k={k}"):
+                with_ls = FLSpp(
+                    n_clusters=k, random_state=0, local_search_iterations=20
+                )
+                with_ls.fit(data)
 
-        assert_equals_computed(flspp, data)
+                assert_equals_computed(with_ls, data)
 
-    def test_pr91(self) -> None:
-        with open("datasets/pr91.txt") as f:
-            data = [list(map(float, line.split())) for line in f.readlines()[1:]]
+                without_ls = FLSpp(
+                    n_clusters=k, random_state=0, local_search_iterations=0
+                )
+                without_ls.fit(data)
 
-        flspp = FLSpp(n_clusters=16)
-        flspp.fit(data)
+                assert_equals_computed(without_ls, data)
+                print(
+                    f"{dataset}, k={k}, "
+                    f"with LS: {with_ls.inertia_:.3E} vs. without LS: {without_ls.inertia_:.3E}"
+                )
+                assert with_ls.inertia_ <= without_ls.inertia_, (
+                    f"{dataset}, k={k}, "
+                    f"with LS: {with_ls.inertia_} vs. without LS: {without_ls.inertia_}",
+                )
 
-        assert_equals_computed(flspp, data)
+    def test_repeated_dataset(self) -> None:
+        print()
+        n_rep = 20
+        for dataset, k, skip, lower_bound, upper_bound in [
+            ("pr91.txt", 50, 1, 9.45e8, 9.7e8),
+            ("rectangles.txt", 36, 0, 1.4583, 1.4584),
+            ("phy_test_features.dat", 100, 0, 7.17e8, 7.5e8),
+        ]:
+            with open(f"datasets/{dataset}") as f:
+                data = [list(map(float, line.split())) for line in f.readlines()[skip:]]
 
-    def test_phy(self) -> None:
-        with open("datasets/phy_test_features.dat") as f:
-            data = [list(map(float, line.split())) for line in f]
+            costs = []
+            for i in tqdm(range(n_rep), desc=f"{dataset}, k={k}", total=n_rep):
+                flspp = FLSpp(
+                    n_clusters=k,
+                    random_state=i,
+                    max_iter=100,
+                    local_search_iterations=15,
+                )
+                flspp.fit(data)
+                costs.append(flspp.inertia_)
 
-        flspp = FLSpp(n_clusters=6)
-        flspp.fit(data)
+            assert_equals_computed(flspp, data)
+            mean_cost = np.mean(costs)
 
-        assert_equals_computed(flspp, data)
+            print(f"{dataset}, k={k}")
+            print(f"Min cost: {min(costs):.4E}")
+            print(f"Max cost: {max(costs):.4E}")
+            print(f"Mean cost: {mean_cost:.4E}")
+
+            assert (
+                lower_bound <= mean_cost <= upper_bound
+            ), f"{dataset}, k={k}, cost: {mean_cost:.4E}"
 
     def test_n_clusters(self) -> None:
         flspp = FLSpp(n_clusters=0)

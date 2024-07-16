@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "flspp"
-version = "0.1.4"
+version = "0.1.5"
 description = "Implementation of the FLS++ algorithm for K-Means clustering."
 authors = ["Lukas Drexler <lukas.drexler@hhu.de>", "Giulia Baldini <giulia.baldini@hhu.de>"]
 readme = "README.md"
@@ -20,6 +20,7 @@ black = {extras = ["jupyter"], version = "^24.4.2"}
 pre-commit = "^2.14.0"
 flake8 = "^7.0.0"
 mypy = "^1.10.0"
+tqdm = "^4.66.4"
 
 
 [tool.poetry.group.test.dependencies]
