@@ -4,6 +4,7 @@ version = "0.1.4"
 description = "Implementation of the FLS++ algorithm for K-Means clustering."
 authors = ["Lukas Drexler <lukas.drexler@hhu.de>", "Giulia Baldini <giulia.baldini@hhu.de>"]
 readme = "README.md"
+license = "LICENSE"
 packages = [
     { include = "flspp" }
 ]
