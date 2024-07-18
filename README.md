@@ -26,7 +26,8 @@ In the following plots, we compare the performance of FLS++ (GFLS++) with variou
 
 ## References
 
-[1] Theo Conrads, Lukas Drexler, Joshua Könen, Daniel R. Schmidt and Melanie Schmidt. "Local Search k-means++ with Foresight" (2024)
+[1] Theo Conrads, Lukas Drexler, Joshua Könen, Daniel R. Schmidt, and Melanie Schmidt. Local Search k-means++ with Foresight. In 22nd International Symposium on Experimental Algorithms (SEA 2024). Leibniz International Proceedings in Informatics (LIPIcs), Volume 301, pp. 7:1-7:20, Schloss Dagstuhl – Leibniz-Zentrum für Informatik (2024)
+
 
 [2] Silvio Lattanzi and Christian Sohler. A better k-means++ algorithm via local search. In Proc.444
 of the 36th ICML, volume 97 of Proceedings of Machine Learning Research, pages 3662–3671.445
@@ -98,8 +99,8 @@ poetry run python -m unittest discover tests -v
 
 ## Citation
 
-If you use this code, please cite [the following paper](https://arxiv.org/abs/2406.02739v1):
+If you use this code, please cite [the following paper](https://drops.dagstuhl.de/entities/document/10.4230/LIPIcs.SEA.2024.7):
 
 ```
-Theo Conrads, Lukas Drexler, Joshua Könen, Daniel R. Schmidt and Melanie Schmidt. "Local Search k-means++ with Foresight" (2024). Accepted at SEA 2024.
+Theo Conrads, Lukas Drexler, Joshua Könen, Daniel R. Schmidt, and Melanie Schmidt. Local Search k-means++ with Foresight. In 22nd International Symposium on Experimental Algorithms (SEA 2024).
 ```
