@@ -181,7 +181,7 @@ int Clustering_Algorithm::choose_initial_center(std::vector<double> cumulative_w
 
     double randnr = unif_generator.getRandomNumber() * cumulative_weights.back();
 
-    for (int i = 0; i < cumulative_weights.size(); ++i) {
+    for (size_t i = 0; i < cumulative_weights.size(); ++i) {
         if (randnr < cumulative_weights[i]) {
             return i;
         }
@@ -473,7 +473,7 @@ void KMEANS::initialize_centers(int k)
 	update_labels();
 
 	// now we select the following centers proportional to the probability of their costs
-	while (centers.size() < k)
+	while (static_cast<int>(centers.size()) < k)
 	{
 		int new_center = choose_center();
 
@@ -1055,7 +1055,7 @@ void GREEDY_KMEANS::initialize_centers(int k)
     	std::vector<double> cumulative_weights;
     	cumulative_weights.push_back(points[0].weight);
 
-	for (int i = 1; i < points.size(); ++i) {
+	for (size_t i = 1; i < points.size(); ++i) {
         	cumulative_weights[i] = cumulative_weights[i-1] + points[i].weight;
     	}
 
@@ -1099,7 +1099,7 @@ void GREEDY_KMEANS::initialize_centers(int k)
 	cumsums = best_information.cumsum;
 
 	// now we select the following centers proportional to the probability of their costs
-	while (centers.size() < k)
+	while (static_cast<int>(centers.size()) < k)
 	{
 		std::vector<int> candidates(z);
 		int best_candidate = 0;
@@ -1298,7 +1298,7 @@ void LOCAL_SEARCH::update_labels_initialize_centers()
 {
 	for (std::size_t i = 0; i < points.size(); ++i)
 	{
-		for (int j = 0; j < centers.size(); ++j)
+		for (int j = 0; j < static_cast<int>(centers.size()); ++j)
 		{
 			double dist = get_pointwise_distance(i, centers[j].index);
 
@@ -1346,7 +1346,7 @@ void LOCAL_SEARCH::greedy_local_search_center()
 
 	brute_force_labels_compare();
 
-	for (int i = 0; i < centers.size(); ++i)
+	for (int i = 0; i < static_cast<int>(centers.size()); ++i)
 	{
 		// Exchange ith center with sampled point
 		Point previous_center(centers[i]);
@@ -1535,7 +1535,7 @@ double LOCAL_SEARCH::get_cost(std::vector<Point> &centers, std::vector<double> &
 		min_dist = std::numeric_limits<double>::max();
 		min_second_dist = std::numeric_limits<double>::max();
 
-		for (int j = 0; j < centers.size(); ++j)
+		for (int j = 0; j < static_cast<int>(centers.size()); ++j)
 		{
 			// double dist = all_pairwise_distances[i][centers[j].index];
 			double dist = get_pointwise_distance(i, centers[j].index);
@@ -1779,7 +1779,7 @@ void FLSPP::local_search_foresight_iterations(int iterations_foresight)
 		// for (int l = 0; l < my_conf.exchange_center_order.size(); l++) { // we use self defined ordering
 
 		// we iterate over every possible exchange situation and save the best choice
-		for (int i = 0; i < centers.size(); i++)
+		for (int i = 0; i < static_cast<int>(centers.size()); i++)
 		{ // since we always do these number of iterations we do not care about the order of exchanges
 			for (std::size_t j = 0; j < points.size(); j++)
 			{
