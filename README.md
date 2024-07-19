@@ -206,5 +206,5 @@ poetry run python -m unittest discover tests -v
 If you use this code, please cite [the following paper](https://doi.org/10.4230/LIPIcs.SEA.2024.7):
 
 ```
-Theo Conrads, Lukas Drexler, Joshua Könen, Daniel R. Schmidt, and Melanie Schmidt. Local Search k-means++ with Foresight. In 22nd International Symposium on Experimental Algorithms (SEA 2024).
+T. Conrads, L. Drexler, J. Könen, D. R. Schmidt, and M. Schmidt, "Local Search k-means++ with Foresight," in 22nd International Symposium on Experimental Algorithms (SEA 2024), 2024, pp. 7:1–7:20. doi: 10.4230/LIPIcs.SEA.2024.7.
 ```
