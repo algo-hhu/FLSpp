@@ -65,10 +65,3 @@ double euclidean_distance_squared(Point &x, Point &y)
     }
     return distance;
 }
-
-Cluster::Cluster(int ind, Point centr) : index(ind), centroid(centr) {}
-
-void Cluster::add_member(Point p)
-{
-    members.push_back(p);
-}
