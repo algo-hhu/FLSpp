@@ -7,7 +7,7 @@
 
 An implementation of the FLS++ algorithm for k-means Clustering, as presented in [1]. This is an improvement of the LS++ algorithm presented by Lattanzi and Sohler in [2].
 
-You can try FLS++ out on our [Clustering Toolkit](https://clustering-toolkit.algo.hhu.de/K-Means_Clustering)!
+**You can try FLS++ out on our [Clustering Toolkit](https://clustering-toolkit.algo.hhu.de/K-Means_Clustering)!**
 
 One can think of the algorithm as working in 3 phases:
 
