@@ -48,9 +48,6 @@ class FLSpp(KMeans):
         y: Any = None,
         sample_weight: Optional[Sequence[float]] = None,
     ) -> "FLSpp":
-        if sample_weight is not None:
-            raise NotImplementedError("Sample weights are not yet supported.")
-
         self._validate_params()
 
         _X = self._validate_data(

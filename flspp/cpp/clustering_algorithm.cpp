@@ -1058,7 +1058,7 @@ void GREEDY_KMEANS::initialize_centers(int k)
 	for (int i = 1; i < points.size(); ++i) {
         	cumulative_weights[i] = cumulative_weights[i-1] + points[i].weight;
     	}
-	
+
 	//choose initial center w.r.t sample weights
 	int initial_center = choose_initial_center(cumulative_weights);
 	centers.push_back(points[initial_center]);

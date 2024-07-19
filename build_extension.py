@@ -8,10 +8,10 @@ extension = Extension(
     name="flspp._core",
     sources=[
         "flspp/_core.cpp",
-        "flspp/clustering_algorithm.cpp",
-        "flspp/clustering.cpp",
-        "flspp/makros.cpp",
-        "flspp/random_generator.cpp",
+        "flspp/cpp/clustering_algorithm.cpp",
+        "flspp/cpp/clustering.cpp",
+        "flspp/cpp/makros.cpp",
+        "flspp/cpp/random_generator.cpp",
     ],
     include_dirs=["flspp"],
 )

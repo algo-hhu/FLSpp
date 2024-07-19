@@ -1,9 +1,9 @@
 #include <Python.h>
 
-#include "random_generator.h"
-#include "clustering_algorithm.h"
-#include "additional_vector_stuff.h"
-#include "makros.h"
+#include "cpp/random_generator.h"
+#include "cpp/clustering_algorithm.h"
+#include "cpp/additional_vector_stuff.h"
+#include "cpp/makros.h"
 
 typedef unsigned int uint;
 
