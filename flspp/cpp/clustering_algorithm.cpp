@@ -1069,7 +1069,7 @@ void GREEDY_KMEANS::initialize_centers(int k)
 	double current_cost = cumsums.back();
 	double new_cost;
 
-	int best_rand = initial center;
+	int best_rand = initial_center;
 
 	// for our current best information we copy our current set in best_information and create an empty set in new_information
 	information_clustering best_information(closest_center_distances, labels, second_closest_center_distances, second_closest_labels, cumsums);
