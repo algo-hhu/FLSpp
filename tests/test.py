@@ -46,7 +46,7 @@ def assert_equals_computed(
         flspp.inertia_, -score
     ), f"Inertia: {flspp.inertia_} vs. score {-score}"
 
-    pred_labels = flspp.predict(data, sample_weight=sample_weight)
+    pred_labels = flspp.predict(data)
     assert all(pred_labels == labels)
 
 
