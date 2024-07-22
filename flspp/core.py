@@ -48,9 +48,6 @@ class FLSpp(KMeans):
         y: Any = None,
         sample_weight: Optional[Sequence[float]] = None,
     ) -> "FLSpp":
-        if sample_weight is not None:
-            raise NotImplementedError("Sample weights are not yet supported.")
-
         self._validate_params()
 
         _X = self._validate_data(
@@ -62,7 +59,7 @@ class FLSpp(KMeans):
             copy=False,
         )
 
-        sample_weight = _check_sample_weight(sample_weight, X, dtype=type(X))
+        _sample_weight = _check_sample_weight(sample_weight, X, dtype=type(X))
         self._n_threads = _openmp_effective_n_threads()
 
         n_samples = _X.shape[0]
@@ -80,6 +77,7 @@ class FLSpp(KMeans):
         _X = np.ascontiguousarray(_X)
         # Declare c types
         c_array = _X.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+        c_weight = _sample_weight.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
         c_n = ctypes.c_uint(n_samples)
         c_d = ctypes.c_uint(self.n_features_in_)
         c_k = ctypes.c_uint(self.n_clusters)
@@ -95,6 +93,7 @@ class FLSpp(KMeans):
         _DLL.cluster.restype = ctypes.c_double
         cost = _DLL.cluster(
             c_array,
+            c_weight,
             c_n,
             c_d,
             c_k,

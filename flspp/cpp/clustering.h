@@ -14,16 +14,17 @@
 #include "additional_vector_stuff.h"
 #include "makros.h"
 
-// MAYBE TWO DISTINCT CLASSES: ONE FOR "NORMAL" POINTS, ONE FOR CENTERS?
+
 class Point
 {
 public:
     int dimension;
     int index;
-
+    double weight = 1;
     std::vector<double> coordinates;
 
     Point(int dim, int ind, std::vector<double> coord);
+    Point(int dim, int ind, double w, std::vector<double> coord);
     Point(Point const &p);
     Point();
 
@@ -38,19 +39,5 @@ bool operator!=(const Point &lhs, const Point &rhs);
 std::ostream &operator<<(std::ostream &os, const Point &p);
 
 double euclidean_distance_squared(Point &x, Point &y);
-
-class Cluster
-{
-public:
-    int index;
-    Point centroid;
-
-    Cluster(int ind, Point centr);
-
-    void add_member(Point p);
-
-private:
-    std::vector<Point> members;
-};
 
 // #endif //FLS___CLUSTERING_H

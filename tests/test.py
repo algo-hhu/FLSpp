@@ -1,5 +1,5 @@
 import unittest
-from typing import Tuple
+from typing import Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -16,7 +16,7 @@ def manual_transform(X: np.ndarray, centers: np.ndarray) -> np.ndarray:
 
 
 def calculate_costs(
-    points: np.ndarray, centers: np.ndarray
+    points: np.ndarray, centers: np.ndarray, weights: Optional[np.ndarray] = None
 ) -> Tuple[np.ndarray, float]:
     cost = 0
     labels = np.zeros(len(points), dtype=int)
@@ -27,17 +27,21 @@ def calculate_costs(
             if dist < mincost:
                 mincost = dist
                 labels[i] = k
+        if weights is not None:
+            mincost *= weights[i]
         cost += mincost
     return labels, cost
 
 
-def assert_equals_computed(flspp: FLSpp, data: np.ndarray) -> None:
+def assert_equals_computed(
+    flspp: FLSpp, data: np.ndarray, sample_weight: Optional[np.ndarray] = None
+) -> None:
     labels, cost = calculate_costs(np.array(data), flspp.cluster_centers_)
     assert flspp.inertia_ is not None and np.isclose(
         flspp.inertia_, cost
     ), f"Inertia: {flspp.inertia_} vs. cost {cost}"
 
-    score = flspp.score(data)
+    score = flspp.score(data, sample_weight=sample_weight)
     assert np.isclose(
         flspp.inertia_, -score
     ), f"Inertia: {flspp.inertia_} vs. score {-score}"
@@ -195,6 +199,12 @@ class TestFLSPP(unittest.TestCase):
         flspp = FLSpp(n_clusters=0)
 
         self.assertRaises(InvalidParameterError, flspp.fit, self.example_data)
+
+    def test_weights(self) -> None:
+        flspp = FLSpp(n_clusters=2)
+        flspp.fit(self.example_data, sample_weight=[1, 2, 3, 4, 5, 6])
+
+        assert_equals_computed(flspp, self.example_data)
 
 
 if __name__ == "__main__":

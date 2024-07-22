@@ -175,6 +175,26 @@ int Clustering_Algorithm::choose_center()
 	return cumsums.size() - 1; // failsafe, probably not needed
 }
 
+int Clustering_Algorithm::choose_initial_center(std::vector<double> cumulative_weights)
+{
+
+	double randnr = unif_generator.getRandomNumber() * cumulative_weights.back();
+
+	for (size_t i = 0; i < cumulative_weights.size(); ++i)
+	{
+		if (randnr < cumulative_weights[i])
+		{
+			return i;
+		}
+	}
+	if (cumulative_weights.back() == 0)
+	{ // cost can not be reduced, return last point
+		return cumulative_weights.size() - 1;
+	}
+	std::cout << "If this gets printed, the generated number was too big!";
+	return cumulative_weights.size() - 1; // failsafe, probably not needed
+}
+
 void Clustering_Algorithm::update_centroids()
 {
 	int dim = points[0].dimension;									  // shorthand for number of coordinates
@@ -245,9 +265,9 @@ void Clustering_Algorithm::compute_centroids(std::vector<Point> &new_centers)
 
 		for (int j = 0; j < dim; ++j)
 		{
-			centroids[label][j] += points[i].coordinates[j]; // add coordinates of current point to coord. of centroid-to-be
+			centroids[label][j] += points[i].coordinates[j] * points[i].weight; // add coordinates of current point to coord. of centroid-to-be, multiplied by weight
 		}
-		cluster_sizes[label] += 1; // increase size couter by one, as one point has been added
+		cluster_sizes[label] += points[i].weight; // increase size counter by weight of point (treating point of weight w as w identical points)
 	}
 
 	for (std::size_t i = 0; i < centroids.size(); ++i)
@@ -452,7 +472,7 @@ void KMEANS::initialize_centers(int k)
 	update_labels();
 
 	// now we select the following centers proportional to the probability of their costs
-	while (centers.size() < k)
+	while (static_cast<int>(centers.size()) < k)
 	{
 		int new_center = choose_center();
 
@@ -687,7 +707,7 @@ double KMEANS::get_cost(std::vector<Point> &_centers, information_clustering &in
 		info.labels[i] = current_min_dist_label;
 		info.second_closest_center_distances[i] = current_second_min_dist;
 		info.second_closest_labels[i] = current_second_min_dist_label;
-		info.set_next_cumsum_value(i, current_min_dist);
+		info.set_next_cumsum_value(i, current_min_dist, points[i].weight);
 	}
 	return info.cumsum.back();
 }
@@ -748,11 +768,11 @@ void KMEANS::update_labels(int added_center, std::vector<bool> &new_closest)
 			closest_center_distances[i] = new_dist;
 			if (i == 0)
 			{
-				cumsums[i] = new_dist;
+				cumsums[i] = new_dist * points[i].weight;
 			}
 			else
 			{
-				cumsums[i] = cumsums[i - 1] + new_dist;
+				cumsums[i] = cumsums[i - 1] + new_dist * points[i].weight;
 			}
 		}
 		else
@@ -764,11 +784,11 @@ void KMEANS::update_labels(int added_center, std::vector<bool> &new_closest)
 			}
 			if (i == 0)
 			{
-				cumsums[i] = closest_center_distances[i];
+				cumsums[i] = closest_center_distances[i] * points[i].weight;
 			}
 			else
 			{
-				cumsums[i] = cumsums[i - 1] + closest_center_distances[i];
+				cumsums[i] = cumsums[i - 1] + closest_center_distances[i] * points[i].weight;
 			}
 		}
 	}
@@ -1030,19 +1050,25 @@ void GREEDY_KMEANS::initialize_centers(int k)
 	if (centers.size() > 0)
 		centers.resize(0);
 
-	// int randnr = ((int)(rand() * points.size() / RAND_MAX));
-	int randnr = std::min((int)(points.size() - 1), (int)(unif_generator.getRandomNumber() * points.size()));
+	// Compute sum of weights of whole point set. If a point has high weight, we want to sample it w/ higher probability
+	std::vector<double> cumulative_weights(points.size());
+	cumulative_weights[0] = points[0].weight;
 
-	centers.push_back(points[randnr]);
+	for (size_t i = 1; i < points.size(); ++i)
+	{
+		cumulative_weights[i] = cumulative_weights[i - 1] + points[i].weight;
+	}
+
+	// choose initial center w.r.t sample weights
+	int initial_center = choose_initial_center(cumulative_weights);
+	centers.push_back(points[initial_center]);
 
 	update_labels();
-
-	brute_force_labels_compare(); // check if labels are correct
 
 	double current_cost = cumsums.back();
 	double new_cost;
 
-	int best_rand = randnr;
+	int best_rand = initial_center;
 
 	// for our current best information we copy our current set in best_information and create an empty set in new_information
 	information_clustering best_information(closest_center_distances, labels, second_closest_center_distances, second_closest_labels, cumsums);
@@ -1072,7 +1098,7 @@ void GREEDY_KMEANS::initialize_centers(int k)
 	cumsums = best_information.cumsum;
 
 	// now we select the following centers proportional to the probability of their costs
-	while (centers.size() < k)
+	while (static_cast<int>(centers.size()) < k)
 	{
 		std::vector<int> candidates(z);
 		int best_candidate = 0;
@@ -1146,11 +1172,11 @@ bool GREEDY_KMEANS::update_labels()
 
 		if (i == 0)
 		{
-			cumsums[i] = closest_center_distances[i];
+			cumsums[i] = closest_center_distances[i] * points[i].weight;
 		}
 		else
 		{
-			cumsums[i] = cumsums[i - 1] + closest_center_distances[i];
+			cumsums[i] = cumsums[i - 1] + closest_center_distances[i] * points[i].weight;
 		}
 	}
 
@@ -1200,11 +1226,11 @@ bool GREEDY_KMEANS::compute_labels_from_given_centroids(std::vector<Point> &new_
 
 		if (i == 0)
 		{
-			new_cumsums[i] = new_distances[i];
+			new_cumsums[i] = new_distances[i] * points[i].weight;
 		}
 		else
 		{
-			new_cumsums[i] = new_cumsums[i - 1] + new_distances[i];
+			new_cumsums[i] = new_cumsums[i - 1] + new_distances[i] * points[i].weight;
 		}
 	}
 
@@ -1271,7 +1297,7 @@ void LOCAL_SEARCH::update_labels_initialize_centers()
 {
 	for (std::size_t i = 0; i < points.size(); ++i)
 	{
-		for (int j = 0; j < centers.size(); ++j)
+		for (int j = 0; j < static_cast<int>(centers.size()); ++j)
 		{
 			double dist = get_pointwise_distance(i, centers[j].index);
 
@@ -1319,7 +1345,7 @@ void LOCAL_SEARCH::greedy_local_search_center()
 
 	brute_force_labels_compare();
 
-	for (int i = 0; i < centers.size(); ++i)
+	for (int i = 0; i < static_cast<int>(centers.size()); ++i)
 	{
 		// Exchange ith center with sampled point
 		Point previous_center(centers[i]);
@@ -1508,7 +1534,7 @@ double LOCAL_SEARCH::get_cost(std::vector<Point> &centers, std::vector<double> &
 		min_dist = std::numeric_limits<double>::max();
 		min_second_dist = std::numeric_limits<double>::max();
 
-		for (int j = 0; j < centers.size(); ++j)
+		for (int j = 0; j < static_cast<int>(centers.size()); ++j)
 		{
 			// double dist = all_pairwise_distances[i][centers[j].index];
 			double dist = get_pointwise_distance(i, centers[j].index);
@@ -1741,7 +1767,7 @@ void FLSPP::local_search_foresight_iterations(int iterations_foresight)
 		double new_cost = 0;
 		for (std::size_t b = 0; b < points.size(); b++)
 		{
-			new_cost += euclidean_distance_squared(points[b], centroids_best[labels[b]]);
+			new_cost += euclidean_distance_squared(points[b], centroids_best[labels[b]]) * points[b].weight;
 		}
 
 		// set starting cost of solution
@@ -1752,7 +1778,7 @@ void FLSPP::local_search_foresight_iterations(int iterations_foresight)
 		// for (int l = 0; l < my_conf.exchange_center_order.size(); l++) { // we use self defined ordering
 
 		// we iterate over every possible exchange situation and save the best choice
-		for (int i = 0; i < centers.size(); i++)
+		for (int i = 0; i < static_cast<int>(centers.size()); i++)
 		{ // since we always do these number of iterations we do not care about the order of exchanges
 			for (std::size_t j = 0; j < points.size(); j++)
 			{

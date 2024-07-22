@@ -8,6 +8,10 @@ Point::Point(int dim, int ind, std::vector<double> coord) : dimension(dim), inde
 {
 }
 
+Point::Point(int dim, int ind, double w, std::vector<double> coord) : dimension(dim), index(ind), weight(w), coordinates(coord)
+{
+}
+
 Point::Point(Point const &p) : dimension(p.dimension), index(p.index), coordinates(p.coordinates)
 {
 }
@@ -60,11 +64,4 @@ double euclidean_distance_squared(Point &x, Point &y)
         distance += (a - b) * (a - b);
     }
     return distance;
-}
-
-Cluster::Cluster(int ind, Point centr) : index(ind), centroid(centr) {}
-
-void Cluster::add_member(Point p)
-{
-    members.push_back(p);
 }

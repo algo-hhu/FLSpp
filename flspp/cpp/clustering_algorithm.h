@@ -80,6 +80,7 @@ public:
 	void init_values();			  // initialize the centers, distances, labels, cumsum
 	virtual bool update_labels(); // update labels to their closest center point
 	int choose_center();		  // choose point index according to km++ prob distibrution
+	int choose_initial_center(std::vector<double> cumulative_weights); //choose init. center s.t. points with higher weights are more likely
 	void update_centroids();
 	void compute_centroids(std::vector<Point> &new_centers);
 	void compute_centroids(const std::vector<int> &input_labels, std::vector<Point> &new_centers); // input labels are not changed so defined as const
@@ -127,12 +128,12 @@ public:
 		centers.resize(k);
 	}
 
-	void set_next_cumsum_value(int index, double value)
+	void set_next_cumsum_value(int index, double value, double weight)
 	{
 		if (index == 0)
-			cumsum[index] = value;
+			cumsum[index] = value * weight;
 		else
-			cumsum[index] = cumsum[index - 1] + value;
+			cumsum[index] = cumsum[index - 1] + value * weight;
 	}
 };
 
