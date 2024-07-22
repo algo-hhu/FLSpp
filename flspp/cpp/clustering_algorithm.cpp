@@ -1051,8 +1051,8 @@ void GREEDY_KMEANS::initialize_centers(int k)
 		centers.resize(0);
 
 	// Compute sum of weights of whole point set. If a point has high weight, we want to sample it w/ higher probability
-	std::vector<double> cumulative_weights;
-	cumulative_weights.push_back(points[0].weight);
+	std::vector<double> cumulative_weights(points.size());
+	cumulative_weights[0] = points[0].weight;
 
 	for (size_t i = 1; i < points.size(); ++i)
 	{
