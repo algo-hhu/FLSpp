@@ -175,26 +175,25 @@ int Clustering_Algorithm::choose_center()
 	return cumsums.size() - 1; // failsafe, probably not needed
 }
 
+int Clustering_Algorithm::choose_initial_center(std::vector<double> cumulative_weights)
+{
 
+	double randnr = unif_generator.getRandomNumber() * cumulative_weights.back();
 
-int Clustering_Algorithm::choose_initial_center(std::vector<double> cumulative_weights) {
-
-    double randnr = unif_generator.getRandomNumber() * cumulative_weights.back();
-
-    for (size_t i = 0; i < cumulative_weights.size(); ++i) {
-        if (randnr < cumulative_weights[i]) {
-            return i;
-        }
-    }
-    if (cumulative_weights.back() == 0) {	// cost can not be reduced, return last point
-        return cumulative_weights.size() - 1;
-    }
-    std::cout << "If this gets printed, the generated number was too big!";
-    return cumulative_weights.size() - 1; //failsafe, probably not needed
-
-
+	for (size_t i = 0; i < cumulative_weights.size(); ++i)
+	{
+		if (randnr < cumulative_weights[i])
+		{
+			return i;
+		}
+	}
+	if (cumulative_weights.back() == 0)
+	{ // cost can not be reduced, return last point
+		return cumulative_weights.size() - 1;
+	}
+	std::cout << "If this gets printed, the generated number was too big!";
+	return cumulative_weights.size() - 1; // failsafe, probably not needed
 }
-
 
 void Clustering_Algorithm::update_centroids()
 {
@@ -1051,20 +1050,20 @@ void GREEDY_KMEANS::initialize_centers(int k)
 	if (centers.size() > 0)
 		centers.resize(0);
 
-	//Compute sum of weights of whole point set. If a point has high weight, we want to sample it w/ higher probability
-    	std::vector<double> cumulative_weights;
-    	cumulative_weights.push_back(points[0].weight);
+	// Compute sum of weights of whole point set. If a point has high weight, we want to sample it w/ higher probability
+	std::vector<double> cumulative_weights;
+	cumulative_weights.push_back(points[0].weight);
 
-	for (size_t i = 1; i < points.size(); ++i) {
-        	cumulative_weights[i] = cumulative_weights[i-1] + points[i].weight;
-    	}
+	for (size_t i = 1; i < points.size(); ++i)
+	{
+		cumulative_weights[i] = cumulative_weights[i - 1] + points[i].weight;
+	}
 
-	//choose initial center w.r.t sample weights
+	// choose initial center w.r.t sample weights
 	int initial_center = choose_initial_center(cumulative_weights);
 	centers.push_back(points[initial_center]);
 
 	update_labels();
-
 
 	double current_cost = cumsums.back();
 	double new_cost;
