@@ -36,7 +36,9 @@ def calculate_costs(
 def assert_equals_computed(
     flspp: FLSpp, data: np.ndarray, sample_weight: Optional[np.ndarray] = None
 ) -> None:
-    labels, cost = calculate_costs(np.array(data), flspp.cluster_centers_)
+    labels, cost = calculate_costs(
+        np.array(data), flspp.cluster_centers_, sample_weight
+    )
     assert flspp.inertia_ is not None and np.isclose(
         flspp.inertia_, cost
     ), f"Inertia: {flspp.inertia_} vs. cost {cost}"
@@ -202,9 +204,10 @@ class TestFLSPP(unittest.TestCase):
 
     def test_weights(self) -> None:
         flspp = FLSpp(n_clusters=2)
-        flspp.fit(self.example_data, sample_weight=[1, 2, 3, 4, 5, 6])
+        weights = np.array([1, 2, 3, 4, 5, 6])
+        flspp.fit(self.example_data, sample_weight=weights)
 
-        assert_equals_computed(flspp, self.example_data)
+        assert_equals_computed(flspp, self.example_data, sample_weight=weights)
 
 
 if __name__ == "__main__":
