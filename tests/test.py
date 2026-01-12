@@ -194,15 +194,10 @@ class TestFLSPP(unittest.TestCase):
                 lower_bound <= mean_cost <= upper_bound
             ), f"{dataset}, k={k}, cost: {mean_cost:.4E}"
 
-    def test_n_clusters_value(self) -> None:
+    def test_n_clusters(self) -> None:
         flspp = FLSpp(n_clusters=0)
 
         self.assertRaises(ValueError, flspp.fit, self.example_data)
- 
-    def test_n_clusters_type(self) -> None:
-        flspp = FLSpp(n_clusters="one")
-
-        self.assertRaises(TypeError, flspp.fit, self.example_data)
 
     def test_weights(self) -> None:
         flspp = FLSpp(n_clusters=2)

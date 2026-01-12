@@ -1,14 +1,18 @@
 import ctypes
-from numbers import Integral
-from time import time
-from typing import Any, Optional, Sequence
-
-import numpy as np
 import numbers
 import os
+from time import time
+from typing import Any, Optional, Sequence, Union
+
+import numpy as np
 from sklearn._config import get_config
 from sklearn.cluster import KMeans
-from sklearn.utils.validation import check_array, check_consistent_length, check_non_negative, validate_data
+from sklearn.utils.validation import (
+    check_array,
+    check_consistent_length,
+    check_non_negative,
+    validate_data,
+)
 
 import flspp._core  # type: ignore
 
@@ -16,7 +20,6 @@ _DLL = ctypes.cdll.LoadLibrary(flspp._core.__file__)
 
 
 class FLSpp(KMeans):
-
     def __init__(
         self,
         n_clusters: int,
@@ -110,38 +113,49 @@ class FLSpp(KMeans):
         self.n_iter_ = c_iter.value
 
         return self
-    
-    def _validate_params(self):
-        if not isinstance(self.n_clusters, Integral):
-            raise TypeError(f"n_clusters must be an integer, got {type(self.n_clusters).__name__}")
+
+    def _validate_params(self) -> None:
+        if not isinstance(self.n_clusters, int):
+            raise TypeError(
+                f"n_clusters must be an integer, got {type(self.n_clusters).__name__}"
+            )
         if self.n_clusters < 1:
             raise ValueError(f"n_clusters must be >= 1, got {self.n_clusters}")
 
-        if not isinstance(self.max_iter, Integral):
-            raise TypeError(f"max_iter must be an integer, got {type(self.max_iter).__name__}")
+        if not isinstance(self.max_iter, int):
+            raise TypeError(
+                f"max_iter must be an integer, got {type(self.max_iter).__name__}"
+            )
         if self.max_iter < 1:
             raise ValueError(f"max_iter must be >= 1, got {self.max_iter}")
 
-        if not isinstance(self.local_search_iterations, Integral):
+        if not isinstance(self.local_search_iterations, int):
             raise TypeError(
-                f"local_search_iterations must be an integer, got {type(self.local_search_iterations).__name__}"
+                f"local_search_iterations must be an integer,"
+                f"got {type(self.local_search_iterations).__name__}"
             )
         if self.local_search_iterations < -1:
-            raise ValueError(f"local_search_iterations must be >= -1, got {self.local_search_iterations}")
+            raise ValueError(
+                f"local_search_iterations must be >= -1, got {self.local_search_iterations}"
+            )
 
         if self.random_state is not None:
-            if not isinstance(self.random_state, Integral):
-                raise TypeError(f"random_state must be None or an integer, got {type(self.random_state).__name__}")
+            if not isinstance(self.random_state, int):
+                raise TypeError(
+                    f"random_state must be None or an integer,"
+                    f"got {type(self.random_state).__name__}"
+                )
             if self.random_state < 0:
                 raise ValueError(f"random_state must be >= 0, got {self.random_state}")
-            
-    def _effective_n_threads(self):
+
+    def _effective_n_threads(self) -> int:
         return os.cpu_count() or 1
 
 
-
-    
-def _validate_sample_weight(sample_weight, X):
+def _validate_sample_weight(
+    sample_weight: Optional[Union[float, np.ndarray, Sequence[float]]],
+    X: np.ndarray,
+) -> np.ndarray:
     n_samples = X.shape[0]
 
     if sample_weight is None:
