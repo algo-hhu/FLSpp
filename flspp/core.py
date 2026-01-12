@@ -5,7 +5,7 @@ from time import time
 from typing import Any, Optional, Sequence, Union
 
 import numpy as np
-from sklearn._config import get_config
+from sklearn import get_config
 from sklearn.cluster import KMeans
 from sklearn.utils.validation import (
     check_array,
@@ -32,7 +32,7 @@ class FLSpp(KMeans):
         self.local_search_iterations = local_search_iterations
         self.random_state = random_state
 
-    def check_metatadata_routing(self) -> None:
+    def check_metadata_routing(self) -> None:
         if get_config().get("enable_metadata_routing", False):
             raise NotImplementedError(
                 "FLSpp has not yet been tested with metadata routing."
