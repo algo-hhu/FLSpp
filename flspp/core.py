@@ -4,11 +4,11 @@ from time import time
 from typing import Any, Optional, Sequence
 
 import numpy as np
+import numbers
+import os
 from sklearn._config import get_config
 from sklearn.cluster import KMeans
-from sklearn.utils._openmp_helpers import _openmp_effective_n_threads
-from sklearn.utils._param_validation import Interval
-from sklearn.utils.validation import _check_sample_weight
+from sklearn.utils.validation import check_array, check_consistent_length, check_non_negative, validate_data
 
 import flspp._core  # type: ignore
 
@@ -16,13 +16,6 @@ _DLL = ctypes.cdll.LoadLibrary(flspp._core.__file__)
 
 
 class FLSpp(KMeans):
-
-    _parameter_constraints: dict = {
-        "n_clusters": [Interval(Integral, 1, None, closed="left")],
-        "max_iter": [Interval(Integral, 1, None, closed="left")],
-        "local_search_iterations": [Interval(Integral, -1, None, closed="left")],
-        "random_state": [None, Interval(Integral, 0, None, closed="left")],
-    }
 
     def __init__(
         self,
@@ -50,17 +43,18 @@ class FLSpp(KMeans):
     ) -> "FLSpp":
         self._validate_params()
 
-        _X = self._validate_data(
+        _X = validate_data(
+            self,
             X,
             accept_sparse="csr",
-            dtype=[np.float64],
+            dtype=np.float64,
             order="C",
             accept_large_sparse=False,
             copy=False,
         )
 
-        _sample_weight = _check_sample_weight(sample_weight, X, dtype=type(X))
-        self._n_threads = _openmp_effective_n_threads()
+        _sample_weight = _validate_sample_weight(sample_weight, _X)
+        self._n_threads = self._effective_n_threads()
 
         n_samples = _X.shape[0]
         self.n_features_in_ = _X.shape[1]
@@ -116,3 +110,61 @@ class FLSpp(KMeans):
         self.n_iter_ = c_iter.value
 
         return self
+    
+    def _validate_params(self):
+        if not isinstance(self.n_clusters, Integral):
+            raise TypeError(f"n_clusters must be an integer, got {type(self.n_clusters).__name__}")
+        if self.n_clusters < 1:
+            raise ValueError(f"n_clusters must be >= 1, got {self.n_clusters}")
+
+        if not isinstance(self.max_iter, Integral):
+            raise TypeError(f"max_iter must be an integer, got {type(self.max_iter).__name__}")
+        if self.max_iter < 1:
+            raise ValueError(f"max_iter must be >= 1, got {self.max_iter}")
+
+        if not isinstance(self.local_search_iterations, Integral):
+            raise TypeError(
+                f"local_search_iterations must be an integer, got {type(self.local_search_iterations).__name__}"
+            )
+        if self.local_search_iterations < -1:
+            raise ValueError(f"local_search_iterations must be >= -1, got {self.local_search_iterations}")
+
+        if self.random_state is not None:
+            if not isinstance(self.random_state, Integral):
+                raise TypeError(f"random_state must be None or an integer, got {type(self.random_state).__name__}")
+            if self.random_state < 0:
+                raise ValueError(f"random_state must be >= 0, got {self.random_state}")
+            
+    def _effective_n_threads(self):
+        return os.cpu_count() or 1
+
+
+
+    
+def _validate_sample_weight(sample_weight, X):
+    n_samples = X.shape[0]
+
+    if sample_weight is None:
+        return np.ones(n_samples, dtype=np.float64)
+
+    if isinstance(sample_weight, numbers.Number):
+        return np.full(n_samples, sample_weight, dtype=np.float64)
+
+    sample_weight = check_array(
+        sample_weight,
+        accept_sparse=False,
+        ensure_2d=False,
+        dtype=np.float64,
+        order="C",
+        input_name="sample_weight",
+    )
+
+    if sample_weight.ndim != 1:
+        raise ValueError(
+            f"sample_weight must be 1D array or scalar, got {sample_weight.ndim}D"
+        )
+
+    check_consistent_length(sample_weight, X)
+    check_non_negative(sample_weight, "`sample_weight`")
+
+    return sample_weight

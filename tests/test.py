@@ -3,7 +3,6 @@ from typing import Optional, Tuple
 
 import numpy as np
 import pandas as pd
-from sklearn.utils._param_validation import InvalidParameterError
 from tqdm import tqdm
 
 from flspp import FLSpp
@@ -195,10 +194,15 @@ class TestFLSPP(unittest.TestCase):
                 lower_bound <= mean_cost <= upper_bound
             ), f"{dataset}, k={k}, cost: {mean_cost:.4E}"
 
-    def test_n_clusters(self) -> None:
+    def test_n_clusters_value(self) -> None:
         flspp = FLSpp(n_clusters=0)
 
-        self.assertRaises(InvalidParameterError, flspp.fit, self.example_data)
+        self.assertRaises(ValueError, flspp.fit, self.example_data)
+ 
+    def test_n_clusters_type(self) -> None:
+        flspp = FLSpp(n_clusters="one")
+
+        self.assertRaises(TypeError, flspp.fit, self.example_data)
 
     def test_weights(self) -> None:
         flspp = FLSpp(n_clusters=2)
