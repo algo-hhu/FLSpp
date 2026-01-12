@@ -49,7 +49,7 @@ class FLSpp(KMeans):
         _X = validate_data(
             self,
             X,
-            accept_sparse="csr",
+            accept_sparse=False,
             dtype=np.float64,
             order="C",
             accept_large_sparse=False,
