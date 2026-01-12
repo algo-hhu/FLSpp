@@ -115,21 +115,21 @@ class FLSpp(KMeans):
         return self
 
     def _validate_params(self) -> None:
-        if not isinstance(self.n_clusters, int):
+        if not isinstance(self.n_clusters, (int, np.integer)):
             raise TypeError(
                 f"n_clusters must be an integer, got {type(self.n_clusters).__name__}"
             )
         if self.n_clusters < 1:
             raise ValueError(f"n_clusters must be >= 1, got {self.n_clusters}")
 
-        if not isinstance(self.max_iter, int):
+        if not isinstance(self.max_iter, (int, np.integer)):
             raise TypeError(
                 f"max_iter must be an integer, got {type(self.max_iter).__name__}"
             )
         if self.max_iter < 1:
             raise ValueError(f"max_iter must be >= 1, got {self.max_iter}")
 
-        if not isinstance(self.local_search_iterations, int):
+        if not isinstance(self.local_search_iterations, (int, np.integer)):
             raise TypeError(
                 f"local_search_iterations must be an integer,"
                 f"got {type(self.local_search_iterations).__name__}"
@@ -140,7 +140,7 @@ class FLSpp(KMeans):
             )
 
         if self.random_state is not None:
-            if not isinstance(self.random_state, int):
+            if not isinstance(self.random_state, (int, np.integer)):
                 raise TypeError(
                     f"random_state must be None or an integer,"
                     f"got {type(self.random_state).__name__}"
