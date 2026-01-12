@@ -164,7 +164,7 @@ def _validate_sample_weight(
     if isinstance(sample_weight, numbers.Number):
         return np.full(n_samples, sample_weight, dtype=np.float64)
 
-    sample_weight = check_array(
+    sw_array = check_array(
         sample_weight,
         accept_sparse=False,
         ensure_2d=False,
@@ -173,12 +173,14 @@ def _validate_sample_weight(
         input_name="sample_weight",
     )
 
-    if sample_weight.ndim != 1:
+    assert isinstance(sw_array, np.ndarray)
+
+    if sw_array.ndim != 1:
         raise ValueError(
-            f"sample_weight must be 1D array or scalar, got {sample_weight.ndim}D"
+            f"sample_weight must be 1D array or scalar, got {sw_array.ndim}D"
         )
 
-    check_consistent_length(sample_weight, X)
-    check_non_negative(sample_weight, "`sample_weight`")
+    check_consistent_length(sw_array, X)
+    check_non_negative(sw_array, "sample_weight")
 
-    return sample_weight
+    return sw_array
