@@ -1,5 +1,4 @@
 import ctypes
-import numbers
 import os
 from time import time
 from typing import Any, Optional, Sequence, Union
@@ -22,7 +21,7 @@ _DLL = ctypes.cdll.LoadLibrary(flspp._core.__file__)
 class FLSpp(KMeans):
     def __init__(
         self,
-        n_clusters: int,
+        n_clusters: int = 8,
         max_iter: int = 100,
         local_search_iterations: int = 20,
         random_state: Optional[int] = None,
@@ -44,7 +43,7 @@ class FLSpp(KMeans):
         y: Any = None,
         sample_weight: Optional[Sequence[float]] = None,
     ) -> "FLSpp":
-        self._validate_params()
+        self._validate_flspp_params()
 
         _X = validate_data(
             self,
@@ -81,10 +80,30 @@ class FLSpp(KMeans):
         c_ll_iterations = ctypes.c_int(self.max_iter)
         c_ls_iterations = ctypes.c_int(self.local_search_iterations)
         c_random_state = ctypes.c_size_t(_seed)
-        c_labels = (ctypes.c_int * n_samples)()
-        c_centers = (ctypes.c_double * self.n_features_in_ * self.n_clusters)()
+
+        centers = np.empty(
+            (self.n_clusters, self.n_features_in_), dtype=np.float64, order="C"
+        )
+        labels = np.empty(n_samples, dtype=np.int32, order="C")
+
+        c_centers = centers.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+        c_labels = labels.ctypes.data_as(ctypes.POINTER(ctypes.c_int))
 
         c_iter = ctypes.c_int()
+
+        _DLL.cluster.argtypes = [
+            ctypes.POINTER(ctypes.c_double),  # X
+            ctypes.POINTER(ctypes.c_double),  # weight
+            ctypes.c_uint,  # n_samples
+            ctypes.c_uint,  # n_features_in_
+            ctypes.c_uint,  # n_clusters
+            ctypes.c_int,  # max_iter
+            ctypes.c_int,  # ls_iterations
+            ctypes.c_size_t,  # random_state
+            ctypes.POINTER(ctypes.c_int),  # labels
+            ctypes.POINTER(ctypes.c_double),  # centers
+            ctypes.POINTER(ctypes.c_int),  # n_iter
+        ]
 
         # Set the return type to double
         _DLL.cluster.restype = ctypes.c_double
@@ -103,18 +122,14 @@ class FLSpp(KMeans):
         )
 
         self.inertia_ = cost
-
-        self.cluster_centers_ = np.ctypeslib.as_array(
-            c_centers, shape=(self.n_clusters, self.n_features_in_)
-        )
-
-        self.labels_ = np.ctypeslib.as_array(c_labels)
+        self.cluster_centers_ = centers
+        self.labels_ = labels
         self._n_features_out = len(self.cluster_centers_)
         self.n_iter_ = c_iter.value
 
         return self
 
-    def _validate_params(self) -> None:
+    def _validate_flspp_params(self) -> None:
         if not isinstance(self.n_clusters, (int, np.integer)):
             raise TypeError(
                 f"n_clusters must be an integer, got {type(self.n_clusters).__name__}"
@@ -161,7 +176,9 @@ def _validate_sample_weight(
     if sample_weight is None:
         return np.ones(n_samples, dtype=np.float64)
 
-    if isinstance(sample_weight, numbers.Number):
+    if isinstance(sample_weight, (int, float, np.integer, np.floating)):
+        if sample_weight < 0:
+            raise ValueError("sample_weight must be non-negative")
         return np.full(n_samples, sample_weight, dtype=np.float64)
 
     sw_array = check_array(
