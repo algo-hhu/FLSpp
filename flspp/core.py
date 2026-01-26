@@ -5,10 +5,18 @@ from typing import Any, Optional, Sequence, Union
 
 import numpy as np
 from sklearn import get_config
-from sklearn.cluster import KMeans
+from sklearn.base import (
+    BaseEstimator,
+    ClassNamePrefixFeaturesOutMixin,
+    ClusterMixin,
+    TransformerMixin,
+)
+from sklearn.metrics import pairwise_distances_argmin_min
+from sklearn.metrics.pairwise import euclidean_distances
 from sklearn.utils.validation import (
     check_array,
     check_consistent_length,
+    check_is_fitted,
     check_non_negative,
     validate_data,
 )
@@ -18,7 +26,9 @@ import flspp._core  # type: ignore
 _DLL = ctypes.cdll.LoadLibrary(flspp._core.__file__)
 
 
-class FLSpp(KMeans):
+class FLSpp(
+    ClassNamePrefixFeaturesOutMixin, TransformerMixin, ClusterMixin, BaseEstimator
+):
     def __init__(
         self,
         n_clusters: int = 8,
@@ -48,6 +58,7 @@ class FLSpp(KMeans):
         _X = validate_data(
             self,
             X,
+            reset=True,
             accept_sparse=False,
             dtype=np.float64,
             order="C",
@@ -128,6 +139,63 @@ class FLSpp(KMeans):
         self.n_iter_ = c_iter.value
 
         return self
+
+    def fit_predict(
+        self,
+        X: Sequence[Sequence[float]],
+        y: Any = None,
+        sample_weight: Optional[Sequence[float]] = None,
+    ) -> np.ndarray:
+        return self.fit(X, sample_weight=sample_weight).labels_
+
+    def fit_transform(
+        self,
+        X: Sequence[Sequence[float]],
+        y: Any = None,
+        sample_weight: Optional[Sequence[float]] = None,
+    ) -> np.ndarray:
+        return self.fit(X, sample_weight=sample_weight)._transform(X)
+
+    def predict(self, X: Sequence[Sequence[float]]) -> np.ndarray:
+        check_is_fitted(self)
+        X = self._check_test_data(X)
+        labels, _ = pairwise_distances_argmin_min(X, self.cluster_centers_)
+        return labels
+
+    def transform(self, X: Sequence[Sequence[float]]) -> np.ndarray:
+        check_is_fitted(self)
+
+        X = self._check_test_data(X)
+        return self._transform(X)
+
+    def _transform(self, X: Sequence[Sequence[float]]) -> np.ndarray:
+        return euclidean_distances(X, self.cluster_centers_)
+
+    def score(
+        self,
+        X: Sequence[Sequence[float]],
+        y: Any = None,
+        sample_weight: Optional[Sequence[float]] = None,
+    ) -> Any:
+        check_is_fitted(self)
+        X = self._check_test_data(X)
+
+        _, distances = pairwise_distances_argmin_min(X, self.cluster_centers_)
+        sample_weight = _validate_sample_weight(sample_weight, X)
+
+        return -np.sum(distances**2 * sample_weight)
+
+    def _check_test_data(self, X: Sequence[Sequence[float]]) -> np.ndarray:
+        X = validate_data(
+            self,
+            X,
+            accept_sparse=False,
+            reset=False,
+            dtype=np.float64,
+            order="C",
+            accept_large_sparse=False,
+        )
+        return X
 
     def _validate_flspp_params(self) -> None:
         if not isinstance(self.n_clusters, (int, np.integer)):

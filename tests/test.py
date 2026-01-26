@@ -80,9 +80,8 @@ class TestFLSPP(unittest.TestCase):
 
     def test_fit_transform(self) -> None:
         flspp = FLSpp(n_clusters=2)
-        flspp.set_output(transform="pandas")
         transformed = flspp.fit_transform(self.example_data)
-
+        flspp.set_output(transform="pandas")
         transformed_manual = manual_transform(self.example_data, flspp.cluster_centers_)
         assert np.allclose(transformed, transformed_manual)
 
