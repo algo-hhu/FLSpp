@@ -165,8 +165,8 @@ class FLSpp(
     def transform(self, X: Sequence[Sequence[float]]) -> np.ndarray:
         check_is_fitted(self)
 
-        X = self._check_test_data(X)
-        return self._transform(X)
+        X_arr = self._check_test_data(X)
+        return self._transform(X_arr)
 
     def _transform(self, X: Sequence[Sequence[float]]) -> np.ndarray:
         return cast(np.ndarray, euclidean_distances(X, self.cluster_centers_))
@@ -178,15 +178,15 @@ class FLSpp(
         sample_weight: Optional[Sequence[float]] = None,
     ) -> Any:
         check_is_fitted(self)
-        X = self._check_test_data(X)
+        X_arr = self._check_test_data(X)
 
-        _, distances = pairwise_distances_argmin_min(X, self.cluster_centers_)
-        sample_weight = _validate_sample_weight(sample_weight, X)
+        _, distances = pairwise_distances_argmin_min(X_arr, self.cluster_centers_)
+        sample_weight = _validate_sample_weight(sample_weight, X_arr)
 
         return -np.sum(distances**2 * sample_weight)
 
     def _check_test_data(self, X: Sequence[Sequence[float]]) -> np.ndarray:
-        X = validate_data(
+        X_val = validate_data(
             self,
             X,
             accept_sparse=False,
@@ -195,7 +195,7 @@ class FLSpp(
             order="C",
             accept_large_sparse=False,
         )
-        return X
+        return X_val
 
     def _validate_flspp_params(self) -> None:
         if not isinstance(self.n_clusters, (int, np.integer)):
