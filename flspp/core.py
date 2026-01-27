@@ -1,7 +1,7 @@
 import ctypes
 import os
 from time import time
-from typing import Any, Optional, Sequence, Union
+from typing import Any, Optional, Sequence, Union, cast
 
 import numpy as np
 from sklearn import get_config
@@ -160,7 +160,7 @@ class FLSpp(
         check_is_fitted(self)
         X = self._check_test_data(X)
         labels, _ = pairwise_distances_argmin_min(X, self.cluster_centers_)
-        return labels
+        return cast(np.ndarray, labels)
 
     def transform(self, X: Sequence[Sequence[float]]) -> np.ndarray:
         check_is_fitted(self)
@@ -169,7 +169,7 @@ class FLSpp(
         return self._transform(X)
 
     def _transform(self, X: Sequence[Sequence[float]]) -> np.ndarray:
-        return euclidean_distances(X, self.cluster_centers_)
+        return cast(np.ndarray, euclidean_distances(X, self.cluster_centers_))
 
     def score(
         self,
