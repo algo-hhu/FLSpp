@@ -12,7 +12,7 @@ Point::Point(int dim, int ind, double w, std::vector<double> coord) : dimension(
 {
 }
 
-Point::Point(Point const &p) : dimension(p.dimension), index(p.index), coordinates(p.coordinates), weight(p.weight)
+Point::Point(Point const &p) : dimension(p.dimension), index(p.index),  weight(p.weight), coordinates(p.coordinates)
 {
 }
 

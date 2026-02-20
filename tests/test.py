@@ -3,7 +3,6 @@ from typing import Optional, Tuple
 
 import numpy as np
 import pandas as pd
-from sklearn.utils._param_validation import InvalidParameterError
 from tqdm import tqdm
 
 from flspp import FLSpp
@@ -85,7 +84,6 @@ class TestFLSPP(unittest.TestCase):
         flspp = FLSpp(n_clusters=2)
         flspp.set_output(transform="pandas")
         transformed = flspp.fit_transform(self.example_data)
-
         transformed_manual = manual_transform(self.example_data, flspp.cluster_centers_)
         assert np.allclose(transformed, transformed_manual)
 
@@ -200,7 +198,7 @@ class TestFLSPP(unittest.TestCase):
     def test_n_clusters(self) -> None:
         flspp = FLSpp(n_clusters=0)
 
-        self.assertRaises(InvalidParameterError, flspp.fit, self.example_data)
+        self.assertRaises(ValueError, flspp.fit, self.example_data)
 
     def test_weights(self) -> None:
         flspp = FLSpp(n_clusters=2)
