@@ -736,11 +736,11 @@ std::pair<double, std::vector<bool>> KMEANS::get_updated_cost(Point added_center
 		new_dist = euclidean_distance_squared(points[i], added_center_point);
 		if (closest_center_distances[i] < new_dist)
 		{
-			new_cost += closest_center_distances[i];
+			new_cost += closest_center_distances[i]*points[i].weight;
 		}
 		else
 		{
-			new_cost += new_dist;
+			new_cost += new_dist*points[i].weight;
 			new_closest_change[i] = true;
 		}
 	}
@@ -1810,7 +1810,7 @@ void FLSPP::local_search_foresight_iterations(int iterations_foresight)
 			double new_cost = 0;
 			for (std::size_t b = 0; b < points.size(); b++)
 			{
-				new_cost += euclidean_distance_squared(points[b], new_centroids[new_labels[b]]);
+				new_cost += euclidean_distance_squared(points[b], new_centroids[new_labels[b]]) * points[b].weight;
 			}
 
 			// compare cost of clustering to current best, overwrite if better result
