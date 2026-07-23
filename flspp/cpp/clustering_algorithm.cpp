@@ -220,10 +220,9 @@ void Clustering_Algorithm::update_centroids()
 
 		for (int j = 0; j < dim; ++j)
 		{
-			centroids[label][j] += points[i].coordinates[j]; // add coordinates of current point to coord. of centroid-to-be
+			centroids[label][j] += points[i].coordinates[j]*points[i].weight; // add coordinates of current point to coord. of centroid-to-be, multiplied by weight
 		}
-		cluster_sizes[label] += 1; // increase size couter by one, as one point has been added
-	}
+		cluster_sizes[label] += points[i].weight; // increase size couter by weight, as one point of weight w is treated like w identical points
 
 	for (std::size_t i = 0; i < centroids.size(); ++i)
 	{
