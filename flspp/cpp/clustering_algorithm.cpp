@@ -224,6 +224,7 @@ void Clustering_Algorithm::update_centroids()
 		}
 		cluster_sizes[label] += points[i].weight; // increase size couter by weight, as one point of weight w is treated like w identical points
 
+	}
 	for (std::size_t i = 0; i < centroids.size(); ++i)
 	{
 		for (int j = 0; j < dim; ++j)
@@ -309,9 +310,9 @@ void Clustering_Algorithm::compute_centroids(std::vector<int> const &input_label
 
 		for (j = 0; j < dim; ++j)
 		{
-			centroids[label][j] += points[i].coordinates[j]; // add coordinates of current point to coord. of centroid-to-be
+			centroids[label][j] += points[i].coordinates[j]*points[i].weight; // add (weighted) coordinates of current point to coord. of centroid-to-be
 		}
-		cluster_sizes[label] += 1; // increase size couter by one, as one point has been added
+		cluster_sizes[label] += points[i].weight; // increase size counter by weight of point (treating point of weight w as w identical points)
 	}
 
 	for (i = 0; i < centroids.size(); ++i)
@@ -1031,11 +1032,11 @@ void GREEDY_KMEANS::update_distances()
 		}
 		if (i == 0)
 		{
-			cumsums[i] = closest_center_distances[i];
+			cumsums[i] = closest_center_distances[i]*points[i].weight;
 		}
 		else
 		{
-			cumsums[i] = cumsums[i - 1] + closest_center_distances[i];
+			cumsums[i] = cumsums[i - 1] + closest_center_distances[i]*points[i].weight;
 		}
 	}
 }
