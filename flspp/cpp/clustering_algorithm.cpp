@@ -200,7 +200,7 @@ void Clustering_Algorithm::update_centroids()
 	int dim = points[0].dimension;									  // shorthand for number of coordinates
 	std::vector<double> init(dim);									  // just the dim-dimensional 0-vector
 	std::vector<std::vector<double>> centroids(centers.size(), init); // empty vector that gets filled with new centroids
-	std::vector<int> cluster_sizes(centers.size());					  // vector that will contain for each center (cluster) the number of points with that label
+	std::vector<double> cluster_weight(centers.size());				  // for each center (cluster), the total weight of the points with that label. Named "weight" rather than "size" because a point of weight w counts as w points; for unweighted input (all weights 1) this is exactly the cluster size
 
 	// initialize vector of k copies of [0,...,0] (which will successively be updated to become the centroids)
 	/*  Note that the centroid is the "mean" of a cluster, i.e. sum of all points in the cluster divided by number.
@@ -220,16 +220,16 @@ void Clustering_Algorithm::update_centroids()
 
 		for (int j = 0; j < dim; ++j)
 		{
-			centroids[label][j] += points[i].coordinates[j]; // add coordinates of current point to coord. of centroid-to-be
+			centroids[label][j] += points[i].coordinates[j]*points[i].weight; // add coordinates of current point to coord. of centroid-to-be, multiplied by weight
 		}
-		cluster_sizes[label] += 1; // increase size couter by one, as one point has been added
-	}
+		cluster_weight[label] += points[i].weight; // increase weight counter by weight of point, as one point of weight w is treated like w identical points
 
+	}
 	for (std::size_t i = 0; i < centroids.size(); ++i)
 	{
 		for (int j = 0; j < dim; ++j)
 		{
-			centroids[i][j] = centroids[i][j] / cluster_sizes[i]; // divide each coordinate of the summed up vectors by number of points in resp. cluster
+			centroids[i][j] = centroids[i][j] / cluster_weight[i]; // divide each coordinate of the summed up vectors by the total weight in resp. cluster
 		}
 	}
 
@@ -245,7 +245,7 @@ void Clustering_Algorithm::compute_centroids(std::vector<Point> &new_centers)
 	int dim = points[0].dimension;									  // shorthand for number of coordinates
 	std::vector<double> init(dim);									  // just the dim-dimensional 0-vector
 	std::vector<std::vector<double>> centroids(centers.size(), init); // empty vector that gets filled with new centroids
-	std::vector<int> cluster_sizes(centers.size());					  // vector that will contain for each center (cluster) the number of points with that label
+	std::vector<double> cluster_weight(centers.size());				  // for each center (cluster), the total weight of the points with that label. Named "weight" rather than "size" because a point of weight w counts as w points; for unweighted input (all weights 1) this is exactly the cluster size
 
 	// initialize vector of k copies of [0,...,0] (which will successively be updated to become the centroids)
 	/*  Note that the centroid is the "mean" of a cluster, i.e. sum of all points in the cluster divided by number.
@@ -267,14 +267,14 @@ void Clustering_Algorithm::compute_centroids(std::vector<Point> &new_centers)
 		{
 			centroids[label][j] += points[i].coordinates[j] * points[i].weight; // add coordinates of current point to coord. of centroid-to-be, multiplied by weight
 		}
-		cluster_sizes[label] += points[i].weight; // increase size counter by weight of point (treating point of weight w as w identical points)
+		cluster_weight[label] += points[i].weight; // increase weight counter by weight of point (treating point of weight w as w identical points)
 	}
 
 	for (std::size_t i = 0; i < centroids.size(); ++i)
 	{
 		for (int j = 0; j < dim; ++j)
 		{
-			centroids[i][j] = centroids[i][j] / cluster_sizes[i]; // divide each coordinate of the summed up vectors by number of points in resp. cluster
+			centroids[i][j] = centroids[i][j] / cluster_weight[i]; // divide each coordinate of the summed up vectors by the total weight in resp. cluster
 		}
 	}
 
@@ -291,7 +291,7 @@ void Clustering_Algorithm::compute_centroids(std::vector<int> const &input_label
 	int dim = points[0].dimension;									  // shorthand for number of coordinates
 	std::vector<double> init(dim);									  // just the dim-dimensional 0-vector
 	std::vector<std::vector<double>> centroids(centers.size(), init); // empty vector that gets filled with new centroids
-	std::vector<int> cluster_sizes(centers.size());					  // vector that will contain for each center (cluster) the number of points with that label
+	std::vector<double> cluster_weight(centers.size());				  // for each center (cluster), the total weight of the points with that label. Named "weight" rather than "size" because a point of weight w counts as w points; for unweighted input (all weights 1) this is exactly the cluster size
 
 	// initialize vector of k copies of [0,...,0] (which will successively be updated to become the centroids)
 	/*  Note that the centroid is the "mean" of a cluster, i.e. sum of all points in the cluster divided by number.
@@ -310,16 +310,16 @@ void Clustering_Algorithm::compute_centroids(std::vector<int> const &input_label
 
 		for (j = 0; j < dim; ++j)
 		{
-			centroids[label][j] += points[i].coordinates[j]; // add coordinates of current point to coord. of centroid-to-be
+			centroids[label][j] += points[i].coordinates[j]*points[i].weight; // add (weighted) coordinates of current point to coord. of centroid-to-be
 		}
-		cluster_sizes[label] += 1; // increase size couter by one, as one point has been added
+		cluster_weight[label] += points[i].weight; // increase weight counter by weight of point (treating point of weight w as w identical points)
 	}
 
 	for (i = 0; i < centroids.size(); ++i)
 	{
 		for (j = 0; j < dim; ++j)
 		{
-			centroids[i][j] = centroids[i][j] / cluster_sizes[i]; // divide each coordinate of the summed up vectors by number of points in resp. cluster
+			centroids[i][j] = centroids[i][j] / cluster_weight[i]; // divide each coordinate of the summed up vectors by the total weight in resp. cluster
 		}
 	}
 
@@ -1032,11 +1032,11 @@ void GREEDY_KMEANS::update_distances()
 		}
 		if (i == 0)
 		{
-			cumsums[i] = closest_center_distances[i];
+			cumsums[i] = closest_center_distances[i]*points[i].weight;
 		}
 		else
 		{
-			cumsums[i] = cumsums[i - 1] + closest_center_distances[i];
+			cumsums[i] = cumsums[i - 1] + closest_center_distances[i]*points[i].weight;
 		}
 	}
 }
