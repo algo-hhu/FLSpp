@@ -965,11 +965,11 @@ bool KMEANS::update_labels()
 
 		if (i == 0)
 		{
-			cumsums[i] = closest_center_distances[i];
+			cumsums[i] = closest_center_distances[i]*points[i].weight;
 		}
 		else
 		{
-			cumsums[i] = cumsums[i - 1] + closest_center_distances[i];
+			cumsums[i] = cumsums[i - 1] + closest_center_distances[i]*points[i].weight;
 		}
 	}
 
