@@ -73,7 +73,6 @@ public:
 	/// <seealso cref="MyClass::MyMethod2"/>
 	/// </summary>
 	Clustering_Algorithm(std::vector<Point> _points, std::size_t seed = 0, int _max_number_iterations = 100) : points(_points), seed(seed), maximum_number_iterations(_max_number_iterations) {};
-	Clustering_Algorithm(std::string filepath, std::size_t seed = 0, char delimiter = ' ', int _max_number_iterations = 100) : seed(seed), maximum_number_iterations(_max_number_iterations){};
 
 	void set_centers(std::vector<Point> _centers) { centers = _centers; }
 
@@ -197,40 +196,6 @@ public:
 											 std::vector<double> &new_second_closest_distances, std::vector<int> &new_second_closest_labels, std::vector<double> &new_cumsums);
 	bool compute_labels_from_given_centroids(std::vector<Point> &new_centroids, std::vector<double> &new_distances, std::vector<int> &new_labels,
 											 std::vector<double> &new_second_closest_distances, std::vector<int> &new_second_closest_labels, std::vector<double> &new_cumsums, std::vector<double> &new_clustercosts);
-};
-
-class LOCAL_SEARCH : public GREEDY_KMEANS
-{
-
-public:
-	std::vector<std::vector<double>> all_pairwise_distances;
-
-	int local_search_steps = 25;
-
-	std::size_t max_size_points = 1; // if size of pointset is exceeding this value we dont compute all pairwise distances but compute the corresponding distances each time
-	bool all_distances_computed = false;
-
-	LOCAL_SEARCH(std::vector<Point> _points, std::size_t seed = 0) : GREEDY_KMEANS(_points, seed) { init_values(); }
-	LOCAL_SEARCH(std::string filepath, std::size_t seed = 0, char delimiter = ' ', int _max_number_iterations = 100, int _z = 1, int _local_search_steps = 25) : GREEDY_KMEANS(filepath, seed, delimiter, _max_number_iterations, _z)
-	{
-		init_values();
-		local_search_steps = _local_search_steps;
-	}
-
-	double get_cost(std::vector<Point> &centers, std::vector<double> &new_distances, std::vector<int> &new_labels,
-					std::vector<double> &new_second_closest_distances, std::vector<int> &new_second_closest_labels, std::vector<double> &new_cumsums);
-
-	void greedy_local_search_center();
-	void compute_all_pairwise_distances();
-	double get_pointwise_distance(int index1, int index2);
-
-	std::pair<std::vector<int>, std::vector<double>> find_3_closest(int point);
-
-	output_algorithm algorithm(int k, bool init = true, double old_cost = -1);
-	// void initialize_centers(int k) override;	// Use same initialize centers function as for greedy kmeans
-
-	// bool update_labels() override;
-	void update_labels_initialize_centers();
 };
 
 struct FLSPP_configuration
