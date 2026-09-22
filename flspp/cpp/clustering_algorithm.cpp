@@ -3,15 +3,6 @@
 
 #include "clustering_algorithm.h"
 
-/*
-bool output_algorithm::operator==(const output_algorithm& rhs)
-{
-	return	final_centers == rhs.final_centers &&
-		final_labels == rhs.final_labels &&
-		cost == rhs.cost &&
-		iterations == rhs.iterations;
-}
-*/
 
 bool operator==(const output_algorithm &lhs, const output_algorithm &rhs)
 {
@@ -52,10 +43,6 @@ bool Clustering_Algorithm::update_labels()
 		for (std::size_t j = 0; j < centers.size(); ++j)
 		{
 			double dist = euclidean_distance_squared(points[i], centers[j]);
-			/*if (dist < closest_center_distances[i]) {
-				closest_center_distances[i] = dist;
-				labels[i] = j;
-			}*/
 			if (dist < current_min_dist)
 			{
 				current_min_dist = dist;
@@ -330,75 +317,6 @@ void Clustering_Algorithm::compute_centroids(std::vector<int> const &input_label
 	}
 }
 
-bool Clustering_Algorithm::brute_force_labels_compare()
-{
-#ifndef DEBUG
-	return true;
-#endif // !DEBUG
-
-	std::vector<double> new_cumsum(points.size());
-	for (std::size_t i = 0; i < points.size(); i++)
-	{
-		if (euclidean_distance_squared(points[i], centers[labels[i]]) != closest_center_distances[i])
-		{
-			std::cout << "distance of point to its label center is not correctly saved in closest_center_distances: " << std::endl;
-			std::cout << "closest_center_distances[" << i << "] = " << closest_center_distances[i] << " , but computed value " << euclidean_distance_squared(points[i], centers[labels[i]]) << std::endl;
-			return false;
-		}
-		// compare currently saved minimum distance and label to all pairwise centers
-		double computed_closest_distance = std::numeric_limits<double>::max();
-		double computed_second_closest_distance = std::numeric_limits<double>::max();
-
-		// iterate through every point and center, check if current set labels and distances are correct
-		for (std::size_t j = 0; j < centers.size(); j++)
-		{
-			double new_distance = euclidean_distance_squared(points[i], centers[j]);
-			if (new_distance <= computed_closest_distance)
-			{
-				computed_second_closest_distance = computed_closest_distance;
-				computed_closest_distance = new_distance;
-			}
-			else if (new_distance < computed_second_closest_distance)
-			{
-				computed_second_closest_distance = new_distance;
-			}
-		}
-
-		// check if distance of current labels is the same
-		if (computed_closest_distance != closest_center_distances[i])
-		{
-			std::cout << "point " << i << ":" << std::endl;
-			std::cout << "distance of closest center is not correct: found " << closest_center_distances[i] << " but computed " << computed_closest_distance << std::endl;
-			return false;
-		}
-
-		// check cumsum values
-
-		double new_cumsum_value = closest_center_distances[i];
-		if (i == 0)
-		{
-			if (new_cumsum_value != cumsums[i])
-			{
-				std::cout << "first cumsum value is wrong: expected " << new_cumsum_value << " , but got " << cumsums[i] << std::endl;
-			}
-			else
-				new_cumsum[i] = new_cumsum_value;
-		}
-		else
-		{
-			if (new_cumsum[i - 1] + new_cumsum_value != cumsums[i])
-			{
-				std::cout << "cumsum value is wrong: expected " << new_cumsum[i - 1] + new_cumsum_value << " , but got " << cumsums[i] << std::endl;
-			}
-			else
-			{
-				new_cumsum[i] = new_cumsum[i - 1] + new_cumsum_value;
-			}
-		}
-	}
-
-	return true;
-}
 
 /** @brief kmeans algorithm
  *
@@ -435,7 +353,6 @@ output_algorithm KMEANS::algorithm(int k, bool init, double _old_cost)
 
 		update_centroids();
 		change = update_labels();
-		brute_force_labels_compare();
 		// std::cout << "current cost: " << cumsums.back() << std::endl;
 
 		new_cost = cumsums.back();
@@ -482,188 +399,7 @@ void KMEANS::initialize_centers(int k)
 	}
 }
 
-// ############################   CURRENTLY UNFINISHED / IN WORK   ####################################
-/** @brief brute force comparison
- *
- * compute all distances of closest and secondclosest and check if current labels and saved distances fit.
- * @param[in]  information_clustering  all information required for kmeans including labels and distances of secondclosest center to each point
- * @return bool  return true if same output as currently in object, otherwise print message to stdcout and return false
- */
-// bool KMEANS::brute_force_labels_compare(std::vector<Point>& _centers, std::vector<double>& _closest_center_distances, std::vector<int>& _labels,
-//	std::vector<double>& _second_closest_center_distances, std::vector<int>& _second_closest_labels, std::vector<double>& _cumsums)
-//{
-// #ifndef DEBUG
-//	return true;
-// #endif // !DEBUG
-//
-//
-//	std::vector<double> new_cumsum(points.size());
-//	for (int i = 0; i < points.size(); i++) {
-//		if (euclidean_distance_squared(points[i], _centers[_labels[i]]) != _closest_center_distances[i]) {
-//			std::cout << "distance of point to its label center is not correctly saved in closest_center_distances: " << std::endl;
-//			std::cout << "closest_center_distances[" << i << "] = " << _closest_center_distances[i] << " , but computed value " << euclidean_distance_squared(points[i], _centers[_labels[i]]) << std::endl;
-//			return false;
-//		}
-//		if (_second_closest_labels[i] != -1 && euclidean_distance_squared(points[i], _centers[_second_closest_labels[i]]) != _second_closest_center_distances[i]) {
-//			std::cout << "distance of point to its secondclosest label center is not correctly saved in second_closest_center_distances: " << std::endl;
-//			std::cout << "second_closest_center_distances[" << i << "] = " << _second_closest_center_distances[i] << " , but computed value " << euclidean_distance_squared(points[i], _centers[_second_closest_labels[i]]) << std::endl;
-//			return false;
-//		}
-//		// compare currently saved minimum distance and label to all pairwise centers
-//		double computed_closest_distance = std::numeric_limits<double>::max();
-//		double computed_second_closest_distance = std::numeric_limits<double>::max();
-//		int closest_index = -1;
-//		int second_closest_index = -1;
-//
-//
-//		// iterate through every point and center, check if current set labels and distances are correct
-//		for (int j = 0; j < centers.size(); j++) {
-//			double new_distance = euclidean_distance_squared(points[i], centers[j]);
-//			if (new_distance <= computed_closest_distance) {
-//				computed_second_closest_distance = computed_closest_distance;
-//				second_closest_index = closest_index;
-//
-//				computed_closest_distance = new_distance;
-//				closest_index = j;
-//			}
-//			else if (new_distance < computed_second_closest_distance) {
-//				computed_second_closest_distance = new_distance;
-//				second_closest_index = j;
-//			}
-//		}
-//
-//		// check if distance of current labels is the same
-//		if (computed_closest_distance != closest_center_distances[i]) {
-//			std::cout << "point " << i << ":" << std::endl;
-//			std::cout << "distance of closest center is not correct: found " << closest_center_distances[i] << " but computed " << computed_closest_distance << std::endl;
-//			std::cout << "index of closest real center: " << closest_index << std::endl;
-//			return false;
-//		}
-//		if (computed_second_closest_distance != second_closest_center_distances[i]) {
-//			std::cout << "point " << i << ":" << std::endl;
-//			std::cout << "distance of secondclosest center is not correct: found " << second_closest_center_distances[i] << " but computed " << computed_second_closest_distance << std::endl;
-//			std::cout << "index of second closest real center: " << second_closest_index << std::endl;
-//			return false;
-//		}
-//
-//		// check cumsum values
-//
-//		double new_cumsum_value = closest_center_distances[i];
-//		if (i == 0) {
-//			if (new_cumsum_value != cumsums[i]) {
-//				std::cout << "first cumsum value is wrong: expected " << new_cumsum_value << " , but got " << cumsums[i] << std::endl;
-//			}
-//			else new_cumsum[i] = new_cumsum_value;
-//		}
-//		else {
-//			if (new_cumsum[i - 1] + new_cumsum_value != cumsums[i]) {
-//				std::cout << "cumsum value is wrong: expected " << new_cumsum[i - 1] + new_cumsum_value << " , but got " << cumsums[i] << std::endl;
-//			}
-//			else {
-//				new_cumsum[i] = new_cumsum[i - 1] + new_cumsum_value;
-//			}
-//		}
-//	}
-//
-//	return true;
-// }
 
-// ############################   CURRENTLY UNFINISHED / IN WORK   ####################################
-/** @brief brute force comparison
- *
- * compute all distances of closest and secondclosest and check if current labels and saved distances fit.
- * @param[in]  information_clustering  all information required for kmeans including labels and distances of secondclosest center to each point
- * @return bool  return true if same output as currently in object, otherwise print message to stdcout and return false
- */
-bool KMEANS::brute_force_labels_compare(information_clustering &info)
-{
-#ifndef DEBUG
-	return true;
-#endif // !DEBUG
-
-	std::vector<double> new_cumsum(points.size());
-	for (std::size_t i = 0; i < points.size(); i++)
-	{
-		if (euclidean_distance_squared(points[i], info.centers[info.labels[i]]) != info.closest_center_distances[i])
-		{
-			std::cout << "distance of point to its label center is not correctly saved in closest_center_distances: " << std::endl;
-			std::cout << "closest_center_distances[" << i << "] = " << closest_center_distances[i] << " , but computed value " << euclidean_distance_squared(points[i], centers[labels[i]]) << std::endl;
-			return false;
-		}
-		if (second_closest_labels[i] != -1 && euclidean_distance_squared(points[i], centers[second_closest_labels[i]]) != second_closest_center_distances[i])
-		{
-			std::cout << "distance of point to its secondclosest label center is not correctly saved in second_closest_center_distances: " << std::endl;
-			std::cout << "second_closest_center_distances[" << i << "] = " << second_closest_center_distances[i] << " , but computed value " << euclidean_distance_squared(points[i], centers[second_closest_labels[i]]) << std::endl;
-			return false;
-		}
-		// compare currently saved minimum distance and label to all pairwise centers
-		double computed_closest_distance = std::numeric_limits<double>::max();
-		double computed_second_closest_distance = std::numeric_limits<double>::max();
-		int closest_index = -1;
-		int second_closest_index = -1;
-
-		// iterate through every point and center, check if current set labels and distances are correct
-		for (std::size_t j = 0; j < centers.size(); j++)
-		{
-			double new_distance = euclidean_distance_squared(points[i], centers[j]);
-			if (new_distance <= computed_closest_distance)
-			{
-				computed_second_closest_distance = computed_closest_distance;
-				second_closest_index = closest_index;
-
-				computed_closest_distance = new_distance;
-				closest_index = j;
-			}
-			else if (new_distance < computed_second_closest_distance)
-			{
-				computed_second_closest_distance = new_distance;
-				second_closest_index = j;
-			}
-		}
-
-		// check if distance of current labels is the same
-		if (computed_closest_distance != closest_center_distances[i])
-		{
-			std::cout << "point " << i << ":" << std::endl;
-			std::cout << "distance of closest center is not correct: found " << closest_center_distances[i] << " but computed " << computed_closest_distance << std::endl;
-			std::cout << "index of closest real center: " << closest_index << std::endl;
-			return false;
-		}
-		if (computed_second_closest_distance != second_closest_center_distances[i])
-		{
-			std::cout << "point " << i << ":" << std::endl;
-			std::cout << "distance of secondclosest center is not correct: found " << second_closest_center_distances[i] << " but computed " << computed_second_closest_distance << std::endl;
-			std::cout << "index of second closest real center: " << second_closest_index << std::endl;
-			return false;
-		}
-
-		// check cumsum values
-
-		double new_cumsum_value = closest_center_distances[i];
-		if (i == 0)
-		{
-			if (new_cumsum_value != cumsums[i])
-			{
-				std::cout << "first cumsum value is wrong: expected " << new_cumsum_value << " , but got " << cumsums[i] << std::endl;
-			}
-			else
-				new_cumsum[i] = new_cumsum_value;
-		}
-		else
-		{
-			if (new_cumsum[i - 1] + new_cumsum_value != cumsums[i])
-			{
-				std::cout << "cumsum value is wrong: expected " << new_cumsum[i - 1] + new_cumsum_value << " , but got " << cumsums[i] << std::endl;
-			}
-			else
-			{
-				new_cumsum[i] = new_cumsum[i - 1] + new_cumsum_value;
-			}
-		}
-	}
-
-	return true;
-}
 
 /** @brief computes the cost of some given center set using a self defined distance function
  *
@@ -1005,7 +741,6 @@ output_algorithm GREEDY_KMEANS::algorithm(int k, bool init, double _old_cost)
 
 		update_centroids();
 		change = update_labels();
-		brute_force_labels_compare();
 
 		new_cost = cumsums.back();
 
@@ -1343,7 +1078,6 @@ void LOCAL_SEARCH::greedy_local_search_center()
 	std::vector<double> best_cumsum;
 	int best_exchange = -1;
 
-	brute_force_labels_compare();
 
 	for (int i = 0; i < static_cast<int>(centers.size()); ++i)
 	{
@@ -1404,7 +1138,6 @@ void LOCAL_SEARCH::greedy_local_search_center()
 
 		// Change back
 		centers[i] = previous_center;
-		brute_force_labels_compare();
 	}
 
 	if (found_improvement)
@@ -1500,7 +1233,6 @@ void LOCAL_SEARCH::greedy_local_search_center()
 			}
 		}
 		centers[best_exchange] = points[center_candidate];
-		brute_force_labels_compare();
 	}
 }
 
@@ -1667,7 +1399,6 @@ output_algorithm LOCAL_SEARCH::algorithm(int k, bool init, double _old_cost)
 	{
 		greedy_local_search_center();
 	}
-	brute_force_labels_compare();
 
 	bool change = true;
 
@@ -1701,7 +1432,6 @@ output_algorithm LOCAL_SEARCH::algorithm(int k, bool init, double _old_cost)
 		old_cost = new_cost;
 
 		iterations++;
-		brute_force_labels_compare();
 	}
 
 	return output_algorithm(centers, labels, cumsums.back(), iterations);
@@ -1823,22 +1553,11 @@ void FLSPP::local_search_foresight_iterations(int iterations_foresight)
 			}
 		}
 
-		// Update information (this could be modified to assign pointers)
-		/*centers = centroids_best;
-		closest_center_distances = closest_center_distances_best;
-		labels = closest_center_distances_labels_best;
-		second_closest_center_distances = second_closest_center_distances_best;
-		second_closest_labels = second_closest_center_distances_labels_best;
-		cumsums = new_cumsums_best;*/
 
 		centers = centroids_best;
 		compute_labels_from_given_centroids(centroids_best, closest_center_distances, labels, second_closest_center_distances, second_closest_labels, cumsums);
 
-		// check for correctness (if makro is defined)
-		brute_force_labels_compare();
-
-		// update new cost and check if stop condition factor is reached
-		// new_cost = cumsums.back();
+	
 	}
 }
 
