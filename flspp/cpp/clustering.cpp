@@ -57,8 +57,6 @@ double euclidean_distance_squared(Point &x, Point &y)
     double a, b;
     for (int i = 0; i < x.dimension; ++i)
     {
-        // distance += (x.coordinates[i] - y.coordinates[i]) * (x.coordinates[i] - y.coordinates[i]);
-        // distance += std::pow(x.coordinates[i] - y.coordinates[i],2);
         a = x.coordinates[i];
         b = y.coordinates[i];
         distance += (a - b) * (a - b);

@@ -19,22 +19,6 @@ struct output_algorithm
 
 public:
 	output_algorithm(std::vector<Point> _final_centers, std::vector<int> _final_labels, double _cost, int _iterations) : final_centers{_final_centers}, final_labels{_final_labels}, cost{_cost}, iterations{_iterations} {}
-
-	/* {
-		return	final_centers == rhs.final_centers	&&
-				final_labels == rhs.final_labels	&&
-				cost			== rhs.cost			&&
-				iterations		== rhs.iterations;
-	}
-	*/
-	/*
-	friend bool operator==(const output_algorithm& lhs, const output_algorithm& rhs) {
-		return	lhs.final_centers == rhs.final_centers	&&
-				lhs.final_labels	== rhs.final_labels	&&
-				lhs.cost			== rhs.cost			&&
-				lhs.iterations	== rhs.iterations;
-	}
-	*/
 };
 
 bool operator==(const output_algorithm &lhs, const output_algorithm &rhs);
@@ -68,10 +52,7 @@ public:
 
 	double get_cost(std::vector<Point> centers);
 
-	/// <summary>MyMethod is a method in the MyClass class.
-	/// <para>Here's how you could make a second paragraph in a description. <see cref="System::Console::WriteLine"/> for information about output statements.</para>
-	/// <seealso cref="MyClass::MyMethod2"/>
-	/// </summary>
+	
 	Clustering_Algorithm(std::vector<Point> _points, std::size_t seed = 0, int _max_number_iterations = 100) : points(_points), seed(seed), maximum_number_iterations(_max_number_iterations) {};
 	Clustering_Algorithm(std::string filepath, std::size_t seed = 0, char delimiter = ' ', int _max_number_iterations = 100) : seed(seed), maximum_number_iterations(_max_number_iterations){};
 
@@ -85,7 +66,6 @@ public:
 	void compute_centroids(std::vector<Point> &new_centers);
 	void compute_centroids(const std::vector<int> &input_labels, std::vector<Point> &new_centers); // input labels are not changed so defined as const
 
-	virtual bool brute_force_labels_compare();
 
 	// make class abstract by using pure virtual function
 	virtual output_algorithm algorithm(int k, bool init = true, double _old_cost = -1) = 0;
@@ -165,7 +145,6 @@ public:
 
 	void initialize_centers(int k);
 
-	bool brute_force_labels_compare(information_clustering &info);
 
 	double get_cost(std::vector<Point> &centers, information_clustering &info, std::function<double(std::vector<Point> &, std::vector<Point> &, int, int)> distance_function);
 	double get_cost(std::vector<Point> &centers, information_clustering &info);
@@ -176,7 +155,6 @@ public:
 
 	bool check_break_cond(int iterations, double old_cost, double new_cost, std::vector<Point> old_centers, std::vector<Point> centers);
 
-	bool brute_force_labels_compare() override;
 };
 
 class GREEDY_KMEANS : public KMEANS
