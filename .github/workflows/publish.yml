@@ -1,30 +1,71 @@
-name: Upload to PyPi
+name: Upload to PyPI
 
 on:
   release:
     types: [published]
-  # Allows you to run this workflow manually from the Actions tab
+  # Manuell aus dem Actions-Tab startbar
   workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
-  deploy:
-
+  build_wheels:
+    name: Build manylinux wheels
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.10"
-    - name: Install poetry
-      run: |
-        curl -sSL https://install.python-poetry.org | POETRY_VERSION=2.3.2 python3 -
-        export PATH="/root/.local/bin:$PATH"
-        poetry run pip install -U pip
-        poetry install
-    - name: Publish package
-      run: poetry publish --build --username __token__ --password ${{ secrets.PYPI_TOKEN }}
+      - uses: actions/checkout@v4
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v4.2.0 
+        env:
+          CIBW_BUILD: "cp312-manylinux_x86_64 cp313-manylinux_x86_64 cp314-manylinux_x86_64 cp315-manylinux_x86_64"
+          CIBW_ARCHS_LINUX: x86_64
+          CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28
+          # Nur nötig, solange cibuildwheel 3.15 als Prerelease führt:
+          # CIBW_ENABLE: cpython-prerelease
+          # Prüft, dass jedes Wheel importierbar ist:
+          CIBW_TEST_COMMAND: "python -c 'import flspp'"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheels
+          path: wheelhouse/*.whl
+
+  build_sdist:
+    name: Build sdist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Build sdist
+        run: |
+          pip install poetry
+          poetry build --format sdist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sdist
+          path: dist/*.tar.gz
+
+  publish:
+    name: Publish to PyPI
+    needs: [build_wheels, build_sdist]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: List files to upload
+        run: ls -l dist
+
+      - name: Publish package
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_TOKEN }}
