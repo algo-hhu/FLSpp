@@ -22,8 +22,6 @@ jobs:
           CIBW_BUILD: "cp312-manylinux_x86_64 cp313-manylinux_x86_64 cp314-manylinux_x86_64 cp315-manylinux_x86_64"
           CIBW_ARCHS_LINUX: x86_64
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28
-          # Nur nötig, solange cibuildwheel 3.15 als Prerelease führt:
-          # CIBW_ENABLE: cpython-prerelease
           # Prüft, dass jedes Wheel importierbar ist:
           CIBW_TEST_COMMAND: "python -c 'import flspp'"
 
@@ -56,6 +54,8 @@ jobs:
     name: Publish to PyPI
     needs: [build_wheels, build_sdist]
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -67,5 +67,3 @@ jobs:
 
       - name: Publish package
         uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ secrets.PYPI_TOKEN }}
