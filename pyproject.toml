@@ -1,14 +1,25 @@
 [tool.poetry]
 name = "flspp"
-version = "0.1.11"
+version = "0.1.12"
 description = "Implementation of the FLS++ algorithm for K-Means clustering."
-authors = ["Lukas Drexler <lukas.drexler@hhu.de>", "Giulia Baldini <giulia.baldini@hhu.de>"]
+authors = [
+    "Lukas Drexler <lukas.drexler@hhu.de>",
+    "Giulia Baldini <giulia.baldini@hhu.de>"
+    ]
 readme = "README.md"
 license = "MIT"
 packages = [
     { include = "flspp" }
 ]
 include = ["images"]
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: Implementation :: CPython",
+]
+
+[tool.poetry.urls]
+Homepage = "https://clustering-toolkit.algo.hhu.de/K-Means_Clustering"
+Repository = "https://github.com/algo-hhu/FLSpp"
 
 [tool.poetry.dependencies]
 python = "^3.12"
